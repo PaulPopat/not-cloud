@@ -1,7 +1,5 @@
 import React from "react";
 
-function Page() {
+export default function Page() {
   return <div>Hello world</div>
 }
-
-export default Page;
