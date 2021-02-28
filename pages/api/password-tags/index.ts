@@ -6,10 +6,10 @@ export default BuildApi({
   GET: async () => ({ status: 200, body: await GetAllTags() }),
   POST: async (_, body) => {
     Assert(IsObject({ name: IsString }), body);
-
+    const response = await AddTag(body.name);
     return {
       status: 201,
-      body: await AddTag(body.name),
+      body: { id: response.id, name: response.name },
     };
   },
 });

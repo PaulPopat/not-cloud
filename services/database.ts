@@ -136,7 +136,7 @@ function Process(db: Sql.Database) {
 
       for (const item of params) {
         await new Promise<void>((res, rej) => {
-          stmt.run(params, (err) => {
+          stmt.run(item, (err) => {
             if (err) {
               rej(err);
             } else {

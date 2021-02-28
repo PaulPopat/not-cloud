@@ -11,6 +11,7 @@ export const Api = Build(
           IsObject({
             id: IsString,
             name: IsString,
+            username: IsString,
             tags: IsArray(IsObject({ id: IsString, name: IsString })),
           })
         ),
@@ -65,7 +66,6 @@ export const Api = Build(
         url: "/passwords/:password",
         parameters: { password: IsString },
         body: IsObject({
-          id: IsString,
           name: IsString,
           url: IsString,
           username: IsString,
@@ -127,12 +127,6 @@ export const Api = Build(
             name: IsString,
           }),
           returns: IsObject({
-            passwords: IsArray(
-              IsObject({
-                id: IsString,
-                name: IsString,
-              })
-            ),
             id: IsString,
             name: IsString,
           }),
@@ -157,8 +151,8 @@ export const Api = Build(
         },
         Delete: {
           method: "DELETE",
-          url: "/passwords/:password",
-          parameters: { password: IsString },
+          url: "/password-tags/:tag",
+          parameters: { tag: IsString },
           returns: DoNotCare,
         },
       },

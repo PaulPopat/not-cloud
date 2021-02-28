@@ -67,6 +67,8 @@ function DeepSwap<T extends Form>(value: FormField, form: T): T {
 
 export function CreateForm<T extends Form>(default_value: T) {
   type FormProps = {
+    form: T;
+    set_form: (v: T) => void;
     submit: (value: Deformed<T>) => void;
   };
 
@@ -105,9 +107,7 @@ export function CreateForm<T extends Form>(default_value: T) {
   }
 
   return Object.assign(
-    ({ children, submit }: PropsWithChildren<FormProps>) => {
-      const [form, set_form] = React.useState(default_value);
-
+    ({ children, submit, form, set_form }: PropsWithChildren<FormProps>) => {
       return (
         <FormContext.Provider
           value={{
@@ -167,6 +167,26 @@ export function CreateForm<T extends Form>(default_value: T) {
               }}
             />
           </div>
+        );
+      },
+      InlineText: (props: PropsWithChildren<FormItemProps>) => {
+        const { value, context } = BuildElement(props);
+        const input_value = value.value;
+        Assert(IsString, input_value);
+
+        return (
+          <input
+            type="text"
+            id={"c" + value.id}
+            autoComplete={props.autocomplete}
+            className="form-control"
+            placeholder={props.placeholder}
+            value={input_value}
+            onChange={(e) => {
+              const to_input = e.currentTarget.value;
+              context.set({ id: value.id, value: to_input });
+            }}
+          />
         );
       },
       Password: (props: PropsWithChildren<FormItemProps>) => {
@@ -263,6 +283,7 @@ export function CreateForm<T extends Form>(default_value: T) {
           </div>
         );
       },
+      Default: default_value,
     }
   );
 }

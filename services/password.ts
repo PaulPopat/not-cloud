@@ -12,8 +12,8 @@ export async function GetAllPasswords() {
   return await Execute(async (db) => {
     const result = [] as ResultPassword[];
     for (const password of await db.All(
-      `SELECT id, name FROM Passwords`,
-      IsObject({ id: IsString, name: IsString })
+      `SELECT id, name, username FROM Passwords`,
+      IsObject({ id: IsString, name: IsString, username: IsString })
     )) {
       const tags = await db.All(
         `SELECT t.id, t.name
@@ -45,7 +45,7 @@ export async function GetPassword(id: string) {
         password: IsString,
         description: IsString,
       }),
-      { id }
+      { $id: id }
     );
 
     const tags = await db.All(
@@ -75,7 +75,7 @@ export async function AddPassword(password: AddPassword) {
   await Execute(async (db) => {
     await db.Run(
       `INSERT INTO Passwords (id, name, url, username, password, description)
-       VALUES ($id, $name, $username, $password, $description)`,
+       VALUES ($id, $name, $url, $username, $password, $description)`,
       {
         $id: id,
         $url: password.url,
@@ -88,7 +88,9 @@ export async function AddPassword(password: AddPassword) {
 
     await db.ForAll(
       `INSERT INTO Password_Tag_Matches (id, password, tag) VALUES ($id, $password, $tag)`,
-      password.tags.map((t) => ({ $id: Guid(), $password: id, $tag: t }))
+      password.tags
+        .filter((t) => t !== "")
+        .map((t) => ({ $id: Guid(), $password: id, $tag: t }))
     );
   });
 

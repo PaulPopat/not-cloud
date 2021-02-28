@@ -11,7 +11,7 @@ const ListInternal: React.FC<ListGroupProps> = ({
   horizontal,
   children,
 }) => (
-  <ul
+  <div
     className={Classes("list-group", {
       "list-group-flush": flush,
       "list-group-horizontal": horizontal === "xs",
@@ -20,7 +20,7 @@ const ListInternal: React.FC<ListGroupProps> = ({
     })}
   >
     {children}
-  </ul>
+  </div>
 );
 
 type ListGroupItemProps = {
@@ -31,27 +31,41 @@ type ListGroupItemProps = {
   colour?: BS.ThemeColour;
 };
 
+function ListItemClass(props: ListGroupItemProps) {
+  return Classes("list-group-item", {
+    active: props.active,
+    disabled: props.disabled,
+    [`list-group-item-${props.colour}`]: props.colour,
+    "list-group-item-action": props.action,
+    "d-flex justify-content-between align-items-center": props.spaced,
+  });
+}
+
 export const List = Object.assign(ListInternal, {
-  Item: ({
-    active,
-    disabled,
-    action,
-    colour,
-    spaced,
-    children,
-  }: PropsWithChildren<ListGroupItemProps>) => (
-    <li
-      className={Classes("list-group-item", {
-        active: active,
-        disabled: disabled,
-        [`list-group-item-${colour}`]: colour,
-        "list-group-item-action": action,
-        "d-flex justify-content-between align-items-center": spaced,
-      })}
-      aria-current={active ? "true" : undefined}
-      aria-disabled={disabled ? "true" : undefined}
+  Item: (props: PropsWithChildren<ListGroupItemProps>) => (
+    <div
+      className={ListItemClass(props)}
+      aria-current={props.active ? "true" : undefined}
+      aria-disabled={props.disabled ? "true" : undefined}
     >
-      {children}
-    </li>
+      {props.children}
+    </div>
+  ),
+  Button: (
+    props: PropsWithChildren<ListGroupItemProps & { click: () => void }>
+  ) => (
+    <a
+      href="#"
+      onClick={(e) => {
+        e.preventDefault();
+        props.click();
+      }}
+      role="button"
+      className={ListItemClass(props)}
+      aria-current={props.active ? "true" : undefined}
+      aria-disabled={props.disabled ? "true" : undefined}
+    >
+      {props.children}
+    </a>
   ),
 });
