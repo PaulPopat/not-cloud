@@ -159,6 +159,6 @@ export const Api = Build(
     },
   },
   {
-    base: `${process.env.ROUTE_URL ?? "http://localhost:3000"}/api`,
+    base: `${process.env.BASE_URL ?? "http://localhost:3000"}/api`,
   }
 );
