@@ -25,26 +25,25 @@ export function Classes(
 }
 
 function FallbackCopyTextToClipboard(text: string) {
-  var textArea = document.createElement("textarea");
-  textArea.value = text;
+  const text_area = document.createElement("textarea");
+  text_area.value = text;
 
   // Avoid scrolling to bottom
-  textArea.style.top = "0";
-  textArea.style.left = "0";
-  textArea.style.position = "fixed";
+  text_area.style.top = "0";
+  text_area.style.left = "0";
+  text_area.style.position = "fixed";
 
-  document.body.appendChild(textArea);
-  textArea.focus();
-  textArea.select();
+  document.body.appendChild(text_area);
+  text_area.focus();
+  text_area.select();
 
   try {
-    var successful = document.execCommand("copy");
-    var msg = successful ? "successful" : "unsuccessful";
+    document.execCommand("copy");
   } catch (err) {
     console.error("Fallback: Oops, unable to copy", err);
   }
 
-  document.body.removeChild(textArea);
+  document.body.removeChild(text_area);
 }
 
 export function CopyString(text: string) {
