@@ -1,4 +1,5 @@
 import { InferGetServerSidePropsType } from "next";
+import Head from "next/head";
 import { Column, Container, Row } from "../components/layout";
 import React from "react";
 import { Api } from "../app/api";
@@ -35,6 +36,9 @@ export default function Page(
   const [search, set_search] = React.useState(Search.Default);
   return (
     <>
+      <Head>
+        <title>Passwords | Not Cloud</title>
+      </Head>
       <Navbar
         brand="Passwords"
         items={[
