@@ -7,3 +7,10 @@ At the moment, it is a very simple password manager but I am using it at home so
 ## If you want to use it
 
 THIS IS NOT SECURE! Make sure that this can only be accessed on a local network or behind a good VPN. Also make sure that you encrypt your hard drive, so as not to lose data.
+
+## Known Bugs
+
+- Delete button exists when creating passwords
+- Header is not sticky
+- Search ignores password URL
+- No feedback on copy
