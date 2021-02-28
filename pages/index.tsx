@@ -8,7 +8,7 @@ import { Modal } from "../components/molecules";
 import { CreateForm, Field, Navbar } from "../components/constructs";
 import { PasswordEditor } from "../components/constructs/password/editor";
 import { EditTag } from "../components/constructs/password/tag";
-import { Classes } from "../util/html";
+import { Classes, CopyString } from "../util/html";
 
 export const getServerSideProps = async () => {
   return {
@@ -136,19 +136,61 @@ export default function Page(
                   return pa < pb ? -1 : pa > pb ? 1 : 0;
                 })
                 .map((t) => (
-                  <List.Button
-                    key={t.id}
-                    click={() => {
-                      set_editing_password(true);
-                      set_current_password(t.id);
-                    }}
-                    action
-                  >
-                    <H5>
-                      {t.name}{" "}
-                      <small className="text-muted fw-normal">{t.username}</small>
-                    </H5>
-                  </List.Button>
+                  <List.Item key={t.id}>
+                    <Row>
+                      <Column xs="9" sm="10" xl="11">
+                        <H5>
+                          <a
+                            href="#"
+                            className={Classes("flex-fill")}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              set_editing_password(true);
+                              set_current_password(t.id);
+                            }}
+                          >
+                            {t.name}
+                          </a>
+                        </H5>
+                      </Column>
+                      <Column xs="3" sm="2" xl="1">
+                        <a
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            CopyString(t.username);
+                          }}
+                        >
+                          <Icon
+                            is="user"
+                            colour="dark"
+                            width="20"
+                            height="20"
+                          />
+                        </a>
+                        &nbsp;
+                        <a
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            Api.Passwords.Get({ password: t.id }).then((p) =>
+                              CopyString(p.password)
+                            );
+                            CopyString(t.username);
+                          }}
+                        >
+                          <Icon is="key" colour="dark" width="20" height="20" />
+                        </a>
+                      </Column>
+                    </Row>
+                    <Row>
+                      <Column>
+                        <small className="text-muted fw-normal">
+                          {t.username}
+                        </small>
+                      </Column>
+                    </Row>
+                  </List.Item>
                 ))}
             </List>
           </Column>

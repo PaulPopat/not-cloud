@@ -1,7 +1,14 @@
 import React from "react";
 import { Classes } from "../../util/html";
 import * as BS from "../types";
-type IconName = "eye" | "eye-off" | "minus-circle" | "plus-circle" | "edit";
+type IconName =
+  | "eye"
+  | "eye-off"
+  | "minus-circle"
+  | "plus-circle"
+  | "edit"
+  | "user"
+  | "key";
 
 const Icons: { [TKey in IconName]: JSX.Element } = {
   eye: (
@@ -33,6 +40,17 @@ const Icons: { [TKey in IconName]: JSX.Element } = {
     <>
       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+    </>
+  ),
+  user: (
+    <>
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+      <circle cx="12" cy="7" r="4"></circle>
+    </>
+  ),
+  key: (
+    <>
+      <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
     </>
   ),
 };
