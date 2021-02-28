@@ -14,3 +14,18 @@ export type Column =
   | "11"
   | "12"
   | "auto";
+
+export type ThemeColour =
+  | "primary"
+  | "secondary"
+  | "success"
+  | "danger"
+  | "warning"
+  | "info"
+  | "light"
+  | "dark";
+
+export type ImageModel = {
+  src: string;
+  alt: string;
+};

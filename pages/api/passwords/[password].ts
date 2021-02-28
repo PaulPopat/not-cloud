@@ -24,6 +24,7 @@ export default BuildApi({
     Assert(
       IsObject({
         name: IsString,
+        url: IsString,
         username: IsString,
         password: IsString,
         description: IsString,

@@ -34,12 +34,13 @@ export async function GetAllPasswords() {
 export async function GetPassword(id: string) {
   return await Execute(async (db) => {
     const password = await db.Get(
-      `SELECT id, name, username, password, description
+      `SELECT id, name, url, username, password, description
        FROM Passwords
        WHERE id = $id`,
       IsObject({
         id: IsString,
         name: IsString,
+        url: IsString,
         username: IsString,
         password: IsString,
         description: IsString,
@@ -62,6 +63,7 @@ export async function GetPassword(id: string) {
 
 type AddPassword = {
   name: string;
+  url: string;
   username: string;
   password: string;
   description: string;
@@ -72,10 +74,11 @@ export async function AddPassword(password: AddPassword) {
   const id = Guid();
   await Execute(async (db) => {
     await db.Run(
-      `INSERT INTO Passwords (id, name, username, password, description)
+      `INSERT INTO Passwords (id, name, url, username, password, description)
        VALUES ($id, $name, $username, $password, $description)`,
       {
         $id: id,
+        $url: password.url,
         $name: password.name,
         $username: password.username,
         $password: password.password,
@@ -95,6 +98,7 @@ export async function AddPassword(password: AddPassword) {
 type UpdatePassword = {
   id: string;
   name: string;
+  url: string;
   username: string;
   password: string;
   description: string;
@@ -106,6 +110,7 @@ export async function UpdatePassword(password: UpdatePassword) {
     await db.Run(
       `UPDATE Passwords
        SET name = $name,
+           url = $url,
            username = $username,
            password = $password,
            description = $description
@@ -113,6 +118,7 @@ export async function UpdatePassword(password: UpdatePassword) {
       {
         $id: password.id,
         $name: password.name,
+        $url: password.url,
         $username: password.username,
         $password: password.password,
         $description: password.description,
@@ -164,17 +170,11 @@ export async function GetTag(id: string) {
     );
 
     const passwords = await db.All(
-      `SELECT p.id, p.name, p.username, p.password, p.description
+      `SELECT p.id, p.name
        FROM Passwords p
        INNER JOIN Password_Tag_Matches m ON m.password = p.id
        WHERE m.tag = $id`,
-      IsObject({
-        id: IsString,
-        name: IsString,
-        username: IsString,
-        password: IsString,
-        description: IsString,
-      }),
+      IsObject({ id: IsString, name: IsString }),
       { $id: id }
     );
 

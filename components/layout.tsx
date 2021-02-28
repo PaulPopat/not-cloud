@@ -2,7 +2,7 @@ import React from "react";
 import { Classes } from "../util/html";
 import * as BS from "./types";
 
-type ContainerProps = { size: BS.SimpleSize };
+type ContainerProps = { size?: BS.SimpleSize };
 export const Container: React.FC<ContainerProps> = ({ size, children }) => (
   <div
     className={Classes({
