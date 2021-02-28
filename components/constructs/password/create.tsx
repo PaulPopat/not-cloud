@@ -20,11 +20,11 @@ export const CreatePassword: React.FC<{
   for (let t = 0; t < tag_count; t += 2) {
     tags_input.push(
       <Row key={t}>
-        <Column>
+        <Column xs="5">
           <Form.Select
             for={(f) => {
-              if (f.tags.length < t - 1) {
-                f.tags[t] = Field("");
+              if (f.tags.length <= t) {
+                f.tags.push(Field(""));
               }
 
               return f.tags[t];
@@ -38,11 +38,11 @@ export const CreatePassword: React.FC<{
           </Form.Select>
         </Column>
         {t < tag_count - 1 && (
-          <Column>
+          <Column xs="5">
             <Form.Select
               for={(f) => {
-                if (f.tags.length < t) {
-                  f.tags[t + 1] = Field("");
+                if (f.tags.length <= t + 1) {
+                  f.tags.push(Field(""));
                 }
 
                 return f.tags[t + 1];
@@ -54,6 +54,17 @@ export const CreatePassword: React.FC<{
                 <option value={t.id}>{t.name}</option>
               ))}
             </Form.Select>
+          </Column>
+        )}
+        {t >= tag_count - 2 && (
+          <Column xs="2">
+            <Button
+              type="button"
+              colour="primary"
+              click={() => set_tag_count(tag_count + 1)}
+            >
+              +
+            </Button>
           </Column>
         )}
       </Row>

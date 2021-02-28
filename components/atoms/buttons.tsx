@@ -12,6 +12,7 @@ type ButtonCommonProps = {
 
 type ButtonProps = {
   type: "button" | "submit" | "reset";
+  click?: () => void;
 };
 
 type LinkButtonProps = {
@@ -34,6 +35,7 @@ export const Button = Object.assign(
       type={props.type}
       className={ButtonClasses(props)}
       disabled={props.disabled || undefined}
+      onClick={() => props.click && props.click()}
     >
       {props.children}
     </button>
