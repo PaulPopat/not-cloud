@@ -41,6 +41,8 @@ export const EditTag: React.FC<Props> = ({ updated, tag, deleted }) => {
               } else {
                 updated(await Api.Passwords.Tags.Post(v));
               }
+
+              set_value(Form.Default);
             }}
             form={value}
             set_form={set_value}
@@ -76,6 +78,7 @@ export const EditTag: React.FC<Props> = ({ updated, tag, deleted }) => {
                       await Api.Passwords.Tags.Delete({ tag });
                       set_confirming(false);
                       deleted();
+                      set_value(Form.Default);
                     }}
                   >
                     Delete

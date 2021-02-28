@@ -70,6 +70,8 @@ export const PasswordEditor: React.FC<{
               } else {
                 updated(await Api.Passwords.Post(v));
               }
+
+              set_value(Form.Default);
             }}
             form={value}
             set_form={set_value}
@@ -187,6 +189,7 @@ export const PasswordEditor: React.FC<{
                       await Api.Passwords.Delete({ password });
                       set_confirming(false);
                       deleted();
+                      set_value(Form.Default);
                     }}
                   >
                     Delete
