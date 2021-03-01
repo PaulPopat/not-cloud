@@ -9,7 +9,7 @@ import { Button, H2, Icon, P } from "../../components/atoms";
 import { Navbar } from "../../components/constructs";
 import { CreateForm, Field, FileDrop } from "../../components/constructs/form";
 import { Column, Container, Row } from "../../components/layout";
-import { Modal } from "../../components/molecules";
+import { Breadcrumbs, Modal } from "../../components/molecules";
 
 function FormatBytes(bytes: number, decimals = 2) {
   if (bytes === 0) return "0 Bytes";
@@ -100,6 +100,25 @@ export default function Page(
                 </P>
               </div>
             </FileDrop>
+          </Column>
+        </Row>
+        <Row>
+          <Column>
+            <Breadcrumbs>
+              <Breadcrumbs.Item href={"/files"}>Home</Breadcrumbs.Item>
+              {props.base.split("/").map((b, i, items) =>
+                i === items.length - 1 ? (
+                  <Breadcrumbs.This key={b}>{b}</Breadcrumbs.This>
+                ) : (
+                  <Breadcrumbs.Item
+                    key={b}
+                    href={"/files/" + items.slice(0, i + 1).join("/")}
+                  >
+                    {b}
+                  </Breadcrumbs.Item>
+                )
+              )}
+            </Breadcrumbs>
           </Column>
         </Row>
         <Row>
