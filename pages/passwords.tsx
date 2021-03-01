@@ -135,10 +135,8 @@ export default function Page(
       <Navbar
         brand="Passwords"
         items={[
-          {
-            click: "/",
-            name: "Home"
-          },
+          { click: "/", name: "Home" },
+          { click: "/files", name: "Files" },
           {
             click: () => set_editing_password(true),
             name: "Create a Password",

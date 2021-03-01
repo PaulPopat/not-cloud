@@ -1,5 +1,13 @@
 import Build from "@paulpopat/api-interface";
-import { DoNotCare, IsArray, IsObject, IsString } from "@paulpopat/safe-type";
+import {
+  DoNotCare,
+  IsArray,
+  IsLiteral,
+  IsNumber,
+  IsObject,
+  IsString,
+  IsUnion,
+} from "@paulpopat/safe-type";
 
 export const Api = Build(
   {
@@ -156,6 +164,24 @@ export const Api = Build(
           parameters: { tag: IsString },
           returns: DoNotCare,
         },
+      },
+    },
+    Files: {
+      ReadDirectory: {
+        method: "GET",
+        url: "/files/directory",
+        parameters: { path: IsString },
+        returns: IsArray(
+          IsObject({
+            name: IsString,
+            extension: IsString,
+            type: IsUnion(IsLiteral("directory"), IsLiteral("file")),
+            created: IsNumber,
+            edited: IsNumber,
+            size: IsNumber,
+            download_url: IsString,
+          })
+        ),
       },
     },
   },
