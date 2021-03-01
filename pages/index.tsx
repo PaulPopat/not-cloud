@@ -10,6 +10,7 @@ import { PasswordEditor } from "../components/constructs/password/editor";
 import { EditTag } from "../components/constructs/password/tag";
 import { Classes, CopyString } from "../util/html";
 import { IsString } from "@paulpopat/safe-type";
+import { AlertContext } from "../components/alert-context";
 
 export const getServerSideProps = async () => {
   return {
@@ -35,6 +36,7 @@ export default function Page(
   const [current_tag, set_current_tag] = React.useState("");
   const [filtering, set_filtering] = React.useState("");
   const [search, set_search] = React.useState(Search.Default);
+  const { alert } = React.useContext(AlertContext);
   const term = (search.term.value as string)?.toLowerCase() ?? "";
   return (
     <>
@@ -145,35 +147,49 @@ export default function Page(
                 })
                 .map((t) => (
                   <List.Item key={t.id}>
-                    <Row>
-                      <Column xs="9" sm="10" xl="11">
-                        <H5>
-                          <a
-                            href="#"
-                            className={Classes("flex-fill")}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              set_editing_password(true);
-                              set_current_password(t.id);
-                            }}
-                          >
-                            {t.name}
-                          </a>
-                        </H5>
-                      </Column>
-                      <Column xs="3" sm="2" xl="1">
+                    <div
+                      style={{
+                        display: "flex",
+                        width: "100%",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <H5>
                         <a
                           href="#"
                           onClick={(e) => {
                             e.preventDefault();
-                            CopyString(t.username);
+                            set_editing_password(true);
+                            set_current_password(t.id);
+                          }}
+                        >
+                          {t.name}
+                        </a>
+                      </H5>
+                      <div>
+                        <a
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const success = CopyString(t.username);
+                            success
+                              ? alert(
+                                  <>
+                                    Successfully copied <b>userrname</b> to clipboard.
+                                  </>,
+                                  "success"
+                                )
+                              : alert(
+                                  <>Failed to copy <b>userrname</b> to clipboard.</>,
+                                  "danger"
+                                );
                           }}
                         >
                           <Icon
                             is="user"
                             colour="dark"
-                            width="20"
-                            height="20"
+                            width="30"
+                            height="30"
                           />
                         </a>
                         &nbsp;
@@ -181,23 +197,27 @@ export default function Page(
                           href="#"
                           onClick={(e) => {
                             e.preventDefault();
-                            Api.Passwords.Get({ password: t.id }).then((p) =>
-                              CopyString(p.password)
-                            );
-                            CopyString(t.username);
+                            Api.Passwords.Get({ password: t.id }).then((p) => {
+                              const success = CopyString(p.password);
+                              success
+                                ? alert(
+                                    <>
+                                      Successfully copied <b>password</b> to clipboard.
+                                    </>,
+                                    "success"
+                                  )
+                                : alert(
+                                    <>Failed to copy <b>password</b> to clipboard.</>,
+                                    "danger"
+                                  );
+                            });
                           }}
                         >
-                          <Icon is="key" colour="dark" width="20" height="20" />
+                          <Icon is="key" colour="dark" width="30" height="30" />
                         </a>
-                      </Column>
-                    </Row>
-                    <Row>
-                      <Column>
-                        <small className="text-muted fw-normal">
-                          {t.username}
-                        </small>
-                      </Column>
-                    </Row>
+                      </div>
+                    </div>
+                    <p className="mb-1">{t.username}</p>
                   </List.Item>
                 ))}
             </List>

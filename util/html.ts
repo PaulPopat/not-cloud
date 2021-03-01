@@ -25,36 +25,40 @@ export function Classes(
 }
 
 function FallbackCopyTextToClipboard(text: string) {
-  const text_area = document.createElement("textarea");
-  text_area.value = text;
+  const el = document.createElement("textarea");
+  el.value = text;
 
   // Avoid scrolling to bottom
-  text_area.style.top = "0";
-  text_area.style.left = "0";
-  text_area.style.position = "fixed";
+  el.style.top = "0";
+  el.style.left = "0";
+  el.style.position = "fixed";
+  el.contentEditable = "true";
+  el.readOnly = false;
 
-  document.body.appendChild(text_area);
-  text_area.focus();
-  text_area.select();
+  document.body.appendChild(el);
+  el.focus();
+  el.select();
 
   try {
     document.execCommand("copy");
+    return true;
   } catch (err) {
     console.error("Fallback: Oops, unable to copy", err);
+    return false;
+  } finally {
+    document.body.removeChild(el);
   }
-
-  document.body.removeChild(text_area);
 }
 
-export function CopyString(text: string) {
+export async function CopyString(text: string) {
   if (!navigator.clipboard) {
-    FallbackCopyTextToClipboard(text);
-    return;
+    return FallbackCopyTextToClipboard(text);
   }
-  navigator.clipboard.writeText(text).then(
-    () => {},
-    (err) => {
-      console.error("Async: Could not copy text: ", err);
-    }
-  );
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
 }
