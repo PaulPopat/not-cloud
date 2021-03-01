@@ -189,6 +189,20 @@ export const Api = Build(
         parameters: { path: IsString },
         returns: DoNotCare,
       },
+      Rename: {
+        method: "PUT",
+        url: "/files/path/:path",
+        parameters: { path: IsString },
+        body: IsObject({ to: IsString }),
+        returns: DoNotCare,
+      },
+      MakeDirectory: {
+        method: "POST",
+        url: "/files/path/:path",
+        parameters: { path: IsString },
+        body: IsObject({ add: IsString }),
+        returns: DoNotCare,
+      },
     },
   },
   {

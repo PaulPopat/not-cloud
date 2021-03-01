@@ -49,3 +49,13 @@ export async function Delete(path: string) {
   const start = Path.join(root, path);
   await Fs.remove(start);
 }
+
+export async function Rename(path: string, to: string) {
+  const start = Path.join(root, path);
+  await Fs.rename(start, Path.join(Path.dirname(start), to));
+}
+
+export async function CreateDirectory(path: string, add: string) {
+  const start = Path.join(root, path);
+  await Fs.mkdir(Path.join(start, add));
+}

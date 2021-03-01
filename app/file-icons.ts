@@ -6,6 +6,7 @@ export const ExtensionMap: NodeJS.Dict<IconName> = {
   ".png": "image",
   ".jpg": "image",
   ".jpeg": "image",
+  ".ico": "image",
   ".gif": "image",
   ".svg": "image",
   ".mp4": "video",

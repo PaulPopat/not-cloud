@@ -7,7 +7,7 @@ import { Api } from "../../app/api";
 import { ExtensionMap } from "../../app/file-icons";
 import { Button, H2, Icon, P } from "../../components/atoms";
 import { Navbar } from "../../components/constructs";
-import { FileDrop } from "../../components/constructs/form";
+import { CreateForm, Field, FileDrop } from "../../components/constructs/form";
 import { Column, Container, Row } from "../../components/layout";
 import { Modal } from "../../components/molecules";
 
@@ -32,6 +32,8 @@ export const getServerSideProps = async () => {
   };
 };
 
+const Form = CreateForm({ name: Field("") });
+
 export default function Page(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
@@ -40,6 +42,14 @@ export default function Page(
   React.useEffect(() => {
     set_content(props.content);
   }, [props.content]);
+  const [creating, set_creating] = React.useState(false);
+  const [editing, set_editing] = React.useState("");
+  const [form, set_form] = React.useState(Form.Default);
+
+  React.useEffect(() => {
+    set_form({ ...form, name: { ...form.name, value: editing } });
+  }, [editing]);
+
   const router = useRouter();
   return (
     <>
@@ -56,6 +66,10 @@ export default function Page(
           {
             click: "/passwords",
             name: "Passwords",
+          },
+          {
+            click: () => set_creating(true),
+            name: "New Folder",
           },
         ]}
       ></Navbar>
@@ -101,7 +115,7 @@ export default function Page(
                   <td scope="col" width="200">
                     Created
                   </td>
-                  <td scope="col" width="50"></td>
+                  <td scope="col" width="75"></td>
                 </tr>
               </thead>
               <tbody>
@@ -155,6 +169,22 @@ export default function Page(
                           href="#"
                           onClick={(e) => {
                             e.preventDefault();
+                            set_editing(c.name + c.extension);
+                          }}
+                        >
+                          <Icon
+                            is="edit"
+                            colour="dark"
+                            width="20"
+                            height="20"
+                            valign="sub"
+                          />
+                        </a>
+                        &nbsp;
+                        <a
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
                             set_deleting(c.download_url);
                           }}
                         >
@@ -199,6 +229,47 @@ export default function Page(
       >
         <P>This is not reversible.</P>
       </Modal>
+      <Form
+        form={form}
+        set_form={set_form}
+        submit={async (f) => {
+          try {
+            if (editing) {
+              await Api.Files.Rename(
+                { path: props.base + "/" + editing },
+                { to: f.name as string }
+              );
+            } else {
+              await Api.Files.MakeDirectory(
+                { path: props.base },
+                { add: f.name as string }
+              );
+            }
+          } finally {
+            set_content(await Api.Files.ReadDirectory({ path: props.base }));
+            set_editing("");
+            set_creating(false);
+            set_form(Form.Default);
+          }
+        }}
+      >
+        <Modal
+          show={editing != "" || creating}
+          close={() => {
+            set_editing("");
+            set_creating(false);
+            set_form(Form.Default);
+          }}
+          title={editing ? <>Rename</> : <>Create Folder</>}
+          footer={
+            <Button type="submit" colour="primary">
+              Submit
+            </Button>
+          }
+        >
+          <Form.Text for={(f) => f.name} autocomplete="off" />
+        </Modal>
+      </Form>
     </>
   );
 }
