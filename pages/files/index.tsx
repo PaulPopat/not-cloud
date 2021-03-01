@@ -5,9 +5,11 @@ import { useRouter } from "next/router";
 import React from "react";
 import { Api } from "../../app/api";
 import { ExtensionMap } from "../../app/file-icons";
-import { Icon } from "../../components/atoms";
+import { Button, H2, Icon, P } from "../../components/atoms";
 import { Navbar } from "../../components/constructs";
+import { FileDrop } from "../../components/constructs/form";
 import { Column, Container, Row } from "../../components/layout";
+import { Modal } from "../../components/molecules";
 
 function FormatBytes(bytes: number, decimals = 2) {
   if (bytes === 0) return "0 Bytes";
@@ -33,6 +35,11 @@ export const getServerSideProps = async () => {
 export default function Page(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
+  const [content, set_content] = React.useState(props.content);
+  const [deleting, set_deleting] = React.useState("");
+  React.useEffect(() => {
+    set_content(props.content);
+  }, [props.content]);
   const router = useRouter();
   return (
     <>
@@ -55,6 +62,34 @@ export default function Page(
       <Container>
         <Row>
           <Column>
+            <FileDrop
+              file={(f) => {
+                const body = new FormData();
+                body.append("file", f);
+
+                fetch(
+                  `/api/files/upload?path=${encodeURIComponent(
+                    props.base + "/" + f.name
+                  )}`,
+                  { method: "POST", body }
+                ).then(() => {
+                  Api.Files.ReadDirectory({ path: props.base }).then(
+                    set_content
+                  );
+                });
+              }}
+            >
+              <div className="file-uploader">
+                <H2>File Upload</H2>
+                <P>
+                  Drag and drop a file or multiple files here to upload them.
+                </P>
+              </div>
+            </FileDrop>
+          </Column>
+        </Row>
+        <Row>
+          <Column>
             <table className="table">
               <thead>
                 <tr>
@@ -63,13 +98,14 @@ export default function Page(
                   <td scope="col" width="150">
                     Size
                   </td>
-                  <td scope="col" width="250">
+                  <td scope="col" width="200">
                     Created
                   </td>
+                  <td scope="col" width="50"></td>
                 </tr>
               </thead>
               <tbody>
-                {props.content
+                {content
                   .sort((a, b) => {
                     if (a.type !== b.type) {
                       return a.type === "directory" ? -1 : 1;
@@ -101,7 +137,7 @@ export default function Page(
                           </Link>
                         ) : (
                           <a
-                            href={`/api/files/download-file?path=${encodeURIComponent(
+                            href={`/api/files/download?path=${encodeURIComponent(
                               c.download_url
                             )}`}
                             target="_blank"
@@ -114,6 +150,23 @@ export default function Page(
                         {c.type === "directory" ? "N/A" : FormatBytes(c.size)}
                       </td>
                       <td>{new Date(c.edited).toLocaleString()}</td>
+                      <td>
+                        <a
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            set_deleting(c.download_url);
+                          }}
+                        >
+                          <Icon
+                            is="trash"
+                            colour="dark"
+                            width="20"
+                            height="20"
+                            valign="sub"
+                          />
+                        </a>
+                      </td>
                     </tr>
                   ))}
               </tbody>
@@ -121,6 +174,31 @@ export default function Page(
           </Column>
         </Row>
       </Container>
+      <Modal
+        show={deleting != ""}
+        close={() => set_deleting("")}
+        title={<>Are you sure?</>}
+        footer={
+          <Button
+            type="button"
+            colour="danger"
+            click={async () => {
+              try {
+                await Api.Files.Delete({ path: deleting });
+              } finally {
+                set_content(
+                  await Api.Files.ReadDirectory({ path: props.base })
+                );
+                set_deleting("");
+              }
+            }}
+          >
+            Confirm Delete
+          </Button>
+        }
+      >
+        <P>This is not reversible.</P>
+      </Modal>
     </>
   );
 }

@@ -169,7 +169,7 @@ export const Api = Build(
     Files: {
       ReadDirectory: {
         method: "GET",
-        url: "/files/directory",
+        url: "/files/path/:path",
         parameters: { path: IsString },
         returns: IsArray(
           IsObject({
@@ -182,6 +182,12 @@ export const Api = Build(
             download_url: IsString,
           })
         ),
+      },
+      Delete: {
+        method: "DELETE",
+        url: "/files/path/:path",
+        parameters: { path: IsString },
+        returns: DoNotCare,
       },
     },
   },

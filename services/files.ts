@@ -1,6 +1,7 @@
 import { Assert, IsString } from "@paulpopat/safe-type";
 import Fs from "fs-extra";
 import Path from "path";
+import { File } from "formidable";
 
 const root = process.env.ROOT_DIR as string;
 Assert(IsString, root);
@@ -33,4 +34,18 @@ export async function PrepareDownload(path: string) {
 
   const stat = await Fs.stat(start);
   return { stat, stream: Fs.createReadStream(start) };
+}
+
+export async function Download(path: string, file: File | File[]) {
+  if (Array.isArray(file)) {
+    throw new Error("Attempted to upload multiple files");
+  }
+
+  const start = Path.join(root, path);
+  await Fs.writeFile(start, await Fs.readFile(file.path));
+}
+
+export async function Delete(path: string) {
+  const start = Path.join(root, path);
+  await Fs.remove(start);
 }

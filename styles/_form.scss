@@ -1,0 +1,16 @@
+.file-uploader {
+  border-radius: 0.5rem;
+  background: $gray-100;
+  margin: ($spacer) 0;
+  padding: $spacer;
+  cursor: pointer;
+
+  &:hover,
+  input:hover + & {
+    background: $gray-200;
+  }
+
+  input:focus + & {
+    outline: 2px solid;
+  }
+}

@@ -9,7 +9,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
       props: {
         content: await Api.Files.ReadDirectory({ path: path.join("/") }),
-        base: "",
+        base: path.join("/"),
       },
     };
   }
@@ -17,7 +17,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       content: await Api.Files.ReadDirectory({ path: path ?? "" }),
-      base: "",
+      base: path ?? "",
     },
   };
 };

@@ -287,3 +287,39 @@ export function CreateForm<T extends Form>(default_value: T) {
     }
   );
 }
+
+export const FileDrop: React.FC<{ file: (file: File) => void }> = ({
+  file,
+  children,
+}) => (
+  <div style={{ position: "relative" }}>
+    <input
+      type="file"
+      multiple
+      onChange={(f) => {
+        f.preventDefault();
+        const files = f.currentTarget.files;
+        if (!files) {
+          return;
+        }
+
+        for (let i = 0; i < files.length; i++) {
+          file(files[i]);
+        }
+
+        f.currentTarget.type = "text";
+        f.currentTarget.type = "file";
+      }}
+      style={{
+        position: "absolute",
+        display: "block",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        opacity: 0,
+      }}
+    />
+    {children}
+  </div>
+);
