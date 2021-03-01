@@ -9,8 +9,10 @@ import { CreateForm, Field, Navbar } from "../components/constructs";
 import { PasswordEditor } from "../components/constructs/password/editor";
 import { EditTag } from "../components/constructs/password/tag";
 import { Classes, CopyString } from "../util/html";
-import { IsString } from "@paulpopat/safe-type";
 import { AlertContext } from "../components/alert-context";
+import { IconName } from "../components/atoms/icon";
+
+type Unpromise<T extends Promise<any>> = T extends Promise<infer U> ? U : never;
 
 export const getServerSideProps = async () => {
   return {
@@ -25,6 +27,92 @@ const Search = CreateForm({
   term: Field(""),
 });
 
+const CopyButton: React.FC<{ icon: IconName; text: string; field: string }> = ({
+  icon,
+  text,
+  field,
+}) => {
+  const { alert } = React.useContext(AlertContext);
+  return (
+    <a
+      href="#"
+      onClick={(e) => {
+        e.preventDefault();
+        CopyString(text).then((success) =>
+          success === "success"
+            ? alert(
+                <>
+                  Successfully copied <b>{field}</b> to clipboard.
+                </>,
+                "success"
+              )
+            : alert(
+                <>
+                  Failed to copy <b>{field}</b> to clipboard.
+                  <div style={{ whiteSpace: "pre-wrap" }}>
+                    {success.toString()}
+                  </div>
+                </>,
+                "danger"
+              )
+        );
+      }}
+    >
+      <Icon is={icon} colour="dark" width="30" height="30" />
+    </a>
+  );
+};
+
+const PasswordItem: React.FC<{
+  id: string;
+  name: string;
+  username: string;
+  on_open: () => void;
+}> = ({ on_open, name, username, id }) => {
+  const [password, set_password] = React.useState<
+    Unpromise<ReturnType<typeof Api["Passwords"]["Get"]>>
+  >();
+  return (
+    <List.Button
+      click={() => {
+        if (password) {
+          set_password(undefined);
+        } else {
+          Api.Passwords.Get({ password: id }).then(set_password);
+        }
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          width: "100%",
+          justifyContent: "space-between",
+        }}
+      >
+        <H5>{name}</H5>
+        {password && (
+          <div>
+            <CopyButton icon="user" text={username} field="username" />
+            &nbsp;
+            <CopyButton icon="key" text={password.password} field="password" />
+            &nbsp;
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                on_open();
+              }}
+            >
+              <Icon is="edit" colour="dark" width="30" height="30" />
+            </a>
+          </div>
+        )}
+      </div>
+      <p className="mb-1">{username}</p>
+    </List.Button>
+  );
+};
+
 export default function Page(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
@@ -36,7 +124,6 @@ export default function Page(
   const [current_tag, set_current_tag] = React.useState("");
   const [filtering, set_filtering] = React.useState("");
   const [search, set_search] = React.useState(Search.Default);
-  const { alert } = React.useContext(AlertContext);
   const term = (search.term.value as string)?.toLowerCase() ?? "";
   return (
     <>
@@ -146,96 +233,16 @@ export default function Page(
                   return pa < pb ? -1 : pa > pb ? 1 : 0;
                 })
                 .map((t) => (
-                  <List.Item key={t.id}>
-                    <div
-                      style={{
-                        display: "flex",
-                        width: "100%",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <H5>
-                        <a
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            set_editing_password(true);
-                            set_current_password(t.id);
-                          }}
-                        >
-                          {t.name}
-                        </a>
-                      </H5>
-                      <div>
-                        <a
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            CopyString(t.username).then((success) =>
-                              success === "success"
-                                ? alert(
-                                    <>
-                                      Successfully copied <b>userrname</b> to
-                                      clipboard.
-                                    </>,
-                                    "success"
-                                  )
-                                : alert(
-                                    <>
-                                      Failed to copy <b>userrname</b> to
-                                      clipboard.
-                                      <div style={{ whiteSpace: "pre-wrap" }}>
-                                        {success.toString()}
-                                      </div>
-                                    </>,
-                                    "danger"
-                                  )
-                            );
-                          }}
-                        >
-                          <Icon
-                            is="user"
-                            colour="dark"
-                            width="30"
-                            height="30"
-                          />
-                        </a>
-                        &nbsp;
-                        <a
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            Api.Passwords.Get({ password: t.id }).then(
-                              async (p) => {
-                                const success = await CopyString(p.password);
-                                success === "success"
-                                  ? alert(
-                                      <>
-                                        Successfully copied <b>password</b> to
-                                        clipboard.
-                                      </>,
-                                      "success"
-                                    )
-                                  : alert(
-                                      <>
-                                        Failed to copy <b>password</b> to
-                                        clipboard.
-                                        <div style={{ whiteSpace: "pre-wrap" }}>
-                                          {success.toString()}
-                                        </div>
-                                      </>,
-                                      "danger"
-                                    );
-                              }
-                            );
-                          }}
-                        >
-                          <Icon is="key" colour="dark" width="30" height="30" />
-                        </a>
-                      </div>
-                    </div>
-                    <p className="mb-1">{t.username}</p>
-                  </List.Item>
+                  <PasswordItem
+                    key={t.id}
+                    id={t.id}
+                    name={t.name}
+                    username={t.username}
+                    on_open={() => {
+                      set_editing_password(true);
+                      set_current_password(t.id);
+                    }}
+                  />
                 ))}
             </List>
           </Column>

@@ -25,7 +25,6 @@ export function Classes(
 }
 
 function IsOS() {
-  //can use a better detection logic here
   return navigator.userAgent.match(/ipad|iphone/i);
 }
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { Classes } from "../../util/html";
 import * as BS from "../types";
-type IconName =
+export type IconName =
   | "eye"
   | "eye-off"
   | "minus-circle"
