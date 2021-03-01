@@ -54,7 +54,7 @@ export default function Page(
   return (
     <>
       <Head>
-        <title>Not Cloud | Files</title>
+        <title>Files | Not Cloud</title>
       </Head>
       <Navbar
         brand="Not Cloud"
