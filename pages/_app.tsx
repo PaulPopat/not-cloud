@@ -23,7 +23,7 @@ export default function App({ Component, pageProps }: AppProps) {
         },
       }}
     >
-      {alert.length > 0 && (
+      {alerts.length > 0 && (
         <div
           style={{
             position: "fixed",
