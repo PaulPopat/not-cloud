@@ -113,7 +113,7 @@ export default function Page(
                     Size
                   </td>
                   <td scope="col" width="200">
-                    Created
+                    Last Edited
                   </td>
                   <td scope="col" width="75"></td>
                 </tr>
