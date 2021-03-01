@@ -10,7 +10,6 @@ THIS IS NOT SECURE! Make sure that this can only be accessed on a local network 
 
 ## Known Bugs
 
-- Delete button exists when creating passwords
 - Header is not sticky
 - Search ignores password URL
 - No feedback on copy
