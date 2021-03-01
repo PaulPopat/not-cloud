@@ -1,5 +1,5 @@
 import { Assert, IsObject, IsString } from "@paulpopat/safe-type";
-import { GetDirectory } from "../../../../services/files";
+import { CreateDirectory, GetDirectory } from "../../../../services/files";
 import { BuildApi } from "../../../../util/api";
 
 export default BuildApi({
@@ -13,5 +13,10 @@ export default BuildApi({
       status: 200,
       body: response,
     };
+  },
+  POST: async (query, body) => {
+    Assert(IsObject({ add: IsString }), body);
+    await CreateDirectory("", body.add);
+    return { status: 200 };
   },
 });
