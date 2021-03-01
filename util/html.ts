@@ -41,10 +41,10 @@ function FallbackCopyTextToClipboard(text: string) {
 
   try {
     document.execCommand("copy");
-    return true;
+    return "success" as const;
   } catch (err) {
     console.error("Fallback: Oops, unable to copy", err);
-    return false;
+    return err as Error;
   } finally {
     document.body.removeChild(el);
   }
@@ -56,9 +56,9 @@ export async function CopyString(text: string) {
   }
   try {
     await navigator.clipboard.writeText(text);
-    return true;
+    return "success" as const;
   } catch (e) {
     console.error(e);
-    return false;
+    return e as Error;
   }
 }

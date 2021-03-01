@@ -59,6 +59,8 @@ const NavbarDropdown: React.FC<NavbarDropdownProps> = ({ name, items }) => {
   );
 };
 
+declare const ResizeObserver: any;
+
 type NavbarProps = {
   brand: string;
   items: (
@@ -68,12 +70,28 @@ type NavbarProps = {
 };
 export const Navbar: React.FC<NavbarProps> = ({ children, brand, items }) => {
   const [open, set_open] = React.useState(false);
+  const [height, set_height] = React.useState(56);
+  const element = React.useRef<HTMLElement>(null);
   const router = useRouter();
+  React.useEffect(() => {
+    try {
+      const el = element.current;
+      if (el) {
+        new ResizeObserver(() => {
+          set_height(el.clientHeight);
+        }).observe(el);
+      }
+    } catch {
+      // This is not 100% supported and nice to have
+      // so we just swallow the error.
+    }
+  }, [element]);
   return (
     <>
       <nav
         className="navbar navbar-expand-lg navbar-light bg-primary"
         style={{ position: "fixed", top: 0, left: 0, width: "100%", zIndex: 1 }}
+        ref={element}
       >
         <div className="container">
           <a className="navbar-brand text-white" href="/">
@@ -128,7 +146,7 @@ export const Navbar: React.FC<NavbarProps> = ({ children, brand, items }) => {
           </div>
         </div>
       </nav>
-      <div style={{ marginBottom: "56px" }} />
+      <div style={{ marginBottom: height }} />
     </>
   );
 };

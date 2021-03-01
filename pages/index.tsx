@@ -171,18 +171,26 @@ export default function Page(
                           href="#"
                           onClick={(e) => {
                             e.preventDefault();
-                            const success = CopyString(t.username);
-                            success
-                              ? alert(
-                                  <>
-                                    Successfully copied <b>userrname</b> to clipboard.
-                                  </>,
-                                  "success"
-                                )
-                              : alert(
-                                  <>Failed to copy <b>userrname</b> to clipboard.</>,
-                                  "danger"
-                                );
+                            CopyString(t.username).then((success) =>
+                              success === "success"
+                                ? alert(
+                                    <>
+                                      Successfully copied <b>userrname</b> to
+                                      clipboard.
+                                    </>,
+                                    "success"
+                                  )
+                                : alert(
+                                    <>
+                                      Failed to copy <b>userrname</b> to
+                                      clipboard.
+                                      <div style={{ whiteSpace: "pre-wrap" }}>
+                                        {success.toString()}
+                                      </div>
+                                    </>,
+                                    "danger"
+                                  )
+                            );
                           }}
                         >
                           <Icon
@@ -197,20 +205,29 @@ export default function Page(
                           href="#"
                           onClick={(e) => {
                             e.preventDefault();
-                            Api.Passwords.Get({ password: t.id }).then((p) => {
-                              const success = CopyString(p.password);
-                              success
-                                ? alert(
-                                    <>
-                                      Successfully copied <b>password</b> to clipboard.
-                                    </>,
-                                    "success"
-                                  )
-                                : alert(
-                                    <>Failed to copy <b>password</b> to clipboard.</>,
-                                    "danger"
-                                  );
-                            });
+                            Api.Passwords.Get({ password: t.id }).then(
+                              async (p) => {
+                                const success = await CopyString(p.password);
+                                success === "success"
+                                  ? alert(
+                                      <>
+                                        Successfully copied <b>password</b> to
+                                        clipboard.
+                                      </>,
+                                      "success"
+                                    )
+                                  : alert(
+                                      <>
+                                        Failed to copy <b>password</b> to
+                                        clipboard.
+                                        <div style={{ whiteSpace: "pre-wrap" }}>
+                                          {success.toString()}
+                                        </div>
+                                      </>,
+                                      "danger"
+                                    );
+                              }
+                            );
                           }}
                         >
                           <Icon is="key" colour="dark" width="30" height="30" />
