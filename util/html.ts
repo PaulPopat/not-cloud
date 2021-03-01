@@ -24,29 +24,36 @@ export function Classes(
   return result.join(" ");
 }
 
+function IsOS() {
+  //can use a better detection logic here
+  return navigator.userAgent.match(/ipad|iphone/i);
+}
+
 function FallbackCopyTextToClipboard(text: string) {
-  const el = document.createElement("textarea");
-  el.value = text;
-
-  // Avoid scrolling to bottom
-  el.style.top = "0";
-  el.style.left = "0";
-  el.style.position = "fixed";
-  el.contentEditable = "true";
-  el.readOnly = false;
-
-  document.body.appendChild(el);
-  el.focus();
-  el.select();
+  const textarea = document.createElement("textarea");
+  textarea.readOnly = true;
+  (textarea as any).contentEditable = true;
+  textarea.value = text;
+  document.body.appendChild(textarea);
+  if (IsOS()) {
+    const range = document.createRange();
+    range.selectNodeContents(textarea);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+    textarea.setSelectionRange(0, 999999);
+  } else {
+    textarea.select();
+  }
 
   try {
     document.execCommand("copy");
     return "success" as const;
-  } catch (err) {
-    console.error("Fallback: Oops, unable to copy", err);
-    return err as Error;
+  } catch (e) {
+    console.error(e);
+    return e as Error;
   } finally {
-    document.body.removeChild(el);
+    document.body.removeChild(textarea);
   }
 }
 
