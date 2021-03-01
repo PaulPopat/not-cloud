@@ -83,6 +83,7 @@ const PasswordItem: React.FC<{
       }}
     >
       <div
+        className="text-dark"
         style={{
           display: "flex",
           width: "100%",
@@ -108,7 +109,7 @@ const PasswordItem: React.FC<{
           </div>
         )}
       </div>
-      <p className="mb-1">{username}</p>
+      <p className="mb-1 text-dark">{username}</p>
     </List.Button>
   );
 };
