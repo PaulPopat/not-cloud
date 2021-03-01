@@ -73,7 +73,7 @@ export const Navbar: React.FC<NavbarProps> = ({ children, brand, items }) => {
     <>
       <nav
         className="navbar navbar-expand-lg navbar-light bg-primary"
-        style={{ position: "fixed", top: 0, left: 0, width: "100%" }}
+        style={{ position: "fixed", top: 0, left: 0, width: "100%", zIndex: 1 }}
       >
         <div className="container">
           <a className="navbar-brand text-white" href="/">
