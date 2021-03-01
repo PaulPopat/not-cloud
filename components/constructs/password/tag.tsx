@@ -65,24 +65,26 @@ export const EditTag: React.FC<Props> = ({ updated, tag, deleted }) => {
                       Click delete again to confirm.
                     </div>
                   )}
-                  <Button
-                    type="button"
-                    colour="danger"
-                    click={async () => {
-                      if (!confirming) {
-                        set_confirming(true);
-                        return;
-                      }
+                  {tag && (
+                    <Button
+                      type="button"
+                      colour="danger"
+                      click={async () => {
+                        if (!confirming) {
+                          set_confirming(true);
+                          return;
+                        }
 
-                      Assert(IsString, tag);
-                      await Api.Passwords.Tags.Delete({ tag });
-                      set_confirming(false);
-                      deleted();
-                      set_value(Form.Default);
-                    }}
-                  >
-                    Delete
-                  </Button>
+                        Assert(IsString, tag);
+                        await Api.Passwords.Tags.Delete({ tag });
+                        set_confirming(false);
+                        deleted();
+                        set_value(Form.Default);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  )}
                 </div>
               </Column>
             </Row>

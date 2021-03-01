@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 800 800">
+  <mask id="cross-mask">
+    <rect x="0" y="0" width="800" height="800" fill="white" />
+    <path 
+      fill="none"
+      stroke="black"
+      stroke-width="70"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M 100 100 L 700 700 M 700 100 L 100 700"
+    />
+  </mask>
+  <rect x="2" y="25" width="799" height="750" fill="#5757e0" rx="50" ry="50" />
+  <path 
+    fill="none"
+    stroke="white"
+    stroke-width="24"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    d="M 150 600 A 50 50 0 1 1 300 300 A 50 50 0 1 1 600 250 A 50 50 0 1 1 550 600 L 150 600"
+    mask="url(#cross-mask)"
+  ></path>
+  <path 
+    fill="none"
+    stroke="white"
+    stroke-width="24"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    d="M 100 100 L 700 700 M 700 100 L 100 700"
+  ></path>
+</svg>

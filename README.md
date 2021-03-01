@@ -14,3 +14,4 @@ THIS IS NOT SECURE! Make sure that this can only be accessed on a local network 
 - Header is not sticky
 - Search ignores password URL
 - No feedback on copy
+- Copy is broken on mobile

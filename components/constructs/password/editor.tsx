@@ -109,59 +109,63 @@ export const PasswordEditor: React.FC<{
             </Row>
             {value.tags.map((t, i) => (
               <Row key={t.id}>
-                <Column xs="10" lg="11">
-                  <Form.Select
-                    for={(f) => t}
-                    autocomplete="off"
-                    placeholder="No Tag Selected"
-                  >
-                    {tags.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.name}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Column>
-                <Column xs="2" lg="1">
-                  {i !== value.tags.length - 1 ? (
-                    <Button
-                      type="button"
-                      colour="secondary"
-                      click={() =>
-                        set_value({
-                          ...value,
-                          tags: value.tags.filter((f) => f.id !== t.id),
-                        })
-                      }
-                    >
-                      <Icon
-                        is="minus-circle"
-                        width="20"
-                        height="20"
-                        colour="light"
-                        valign="sub"
-                      />
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      colour="primary"
-                      click={() =>
-                        set_value({
-                          ...value,
-                          tags: [...value.tags, Field("")],
-                        })
-                      }
-                    >
-                      <Icon
-                        is="plus-circle"
-                        width="20"
-                        height="20"
-                        colour="light"
-                        valign="sub"
-                      />
-                    </Button>
-                  )}
+                <Column xs="12">
+                  <div style={{ display: "flex" }}>
+                    <div style={{ flex: 1 }} className="me-3">
+                      <Form.Select
+                        for={(f) => t}
+                        autocomplete="off"
+                        placeholder="No Tag Selected"
+                      >
+                        {tags.map((t) => (
+                          <option key={t.id} value={t.id}>
+                            {t.name}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </div>
+                    <div className="mb-3">
+                      {i !== value.tags.length - 1 ? (
+                        <Button
+                          type="button"
+                          colour="secondary"
+                          click={() =>
+                            set_value({
+                              ...value,
+                              tags: value.tags.filter((f) => f.id !== t.id),
+                            })
+                          }
+                        >
+                          <Icon
+                            is="minus-circle"
+                            width="20"
+                            height="20"
+                            colour="light"
+                            valign="sub"
+                          />
+                        </Button>
+                      ) : (
+                        <Button
+                          type="button"
+                          colour="primary"
+                          click={() =>
+                            set_value({
+                              ...value,
+                              tags: [...value.tags, Field("")],
+                            })
+                          }
+                        >
+                          <Icon
+                            is="plus-circle"
+                            width="20"
+                            height="20"
+                            colour="light"
+                            valign="sub"
+                          />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
                 </Column>
               </Row>
             ))}
@@ -176,24 +180,26 @@ export const PasswordEditor: React.FC<{
                       Click delete again to confirm.
                     </div>
                   )}
-                  <Button
-                    type="button"
-                    colour="danger"
-                    click={async () => {
-                      if (!confirming) {
-                        set_confirming(true);
-                        return;
-                      }
+                  {password && (
+                    <Button
+                      type="button"
+                      colour="danger"
+                      click={async () => {
+                        if (!confirming) {
+                          set_confirming(true);
+                          return;
+                        }
 
-                      Assert(IsString, password);
-                      await Api.Passwords.Delete({ password });
-                      set_confirming(false);
-                      deleted();
-                      set_value(Form.Default);
-                    }}
-                  >
-                    Delete
-                  </Button>
+                        Assert(IsString, password);
+                        await Api.Passwords.Delete({ password });
+                        set_confirming(false);
+                        deleted();
+                        set_value(Form.Default);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  )}
                 </div>
               </Column>
             </Row>
