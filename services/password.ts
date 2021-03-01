@@ -5,6 +5,7 @@ import { v4 as Guid } from "uuid";
 type ResultPassword = {
   id: string;
   name: string;
+  url: string;
   tags: { id: string; name: string }[];
 };
 
@@ -12,8 +13,13 @@ export async function GetAllPasswords() {
   return await Execute(async (db) => {
     const result = [] as ResultPassword[];
     for (const password of await db.All(
-      `SELECT id, name, username FROM Passwords`,
-      IsObject({ id: IsString, name: IsString, username: IsString })
+      `SELECT id, name, username, url FROM Passwords`,
+      IsObject({
+        id: IsString,
+        name: IsString,
+        username: IsString,
+        url: IsString,
+      })
     )) {
       const tags = await db.All(
         `SELECT t.id, t.name

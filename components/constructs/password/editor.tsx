@@ -19,6 +19,7 @@ export const PasswordEditor: React.FC<{
   updated: (value: {
     id: string;
     name: string;
+    url: string;
     username: string;
     tags: {
       id: string;

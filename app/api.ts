@@ -11,6 +11,7 @@ export const Api = Build(
           IsObject({
             id: IsString,
             name: IsString,
+            url: IsString,
             username: IsString,
             tags: IsArray(IsObject({ id: IsString, name: IsString })),
           })

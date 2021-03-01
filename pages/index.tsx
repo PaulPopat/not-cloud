@@ -9,6 +9,7 @@ import { CreateForm, Field, Navbar } from "../components/constructs";
 import { PasswordEditor } from "../components/constructs/password/editor";
 import { EditTag } from "../components/constructs/password/tag";
 import { Classes, CopyString } from "../util/html";
+import { IsString } from "@paulpopat/safe-type";
 
 export const getServerSideProps = async () => {
   return {
@@ -34,6 +35,7 @@ export default function Page(
   const [current_tag, set_current_tag] = React.useState("");
   const [filtering, set_filtering] = React.useState("");
   const [search, set_search] = React.useState(Search.Default);
+  const term = (search.term.value as string)?.toLowerCase() ?? "";
   return (
     <>
       <Head>
@@ -125,11 +127,17 @@ export default function Page(
                   (p) =>
                     !filtering || p.tags.find((t) => t.id === filtering) != null
                 )
-                .filter(
-                  (p) =>
-                    !search.term.value ||
-                    p.name.includes(search.term.value as string)
-                )
+                .filter((p) => {
+                  if (!term) {
+                    return true;
+                  }
+
+                  return (
+                    p.name.toLowerCase().includes(term) ||
+                    p.url.toLowerCase().includes(term) ||
+                    p.username.toLowerCase().includes(term)
+                  );
+                })
                 .sort((a, b) => {
                   const pa = a.name.toLowerCase();
                   const pb = b.name.toLowerCase();
