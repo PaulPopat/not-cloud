@@ -22,6 +22,10 @@ async function PrintPDF(html: string) {
         padding-top: 0.5em;
         margin-bottom: 1.13em;
       }
+
+      h1, h2, h3, h4, h5, h6, h7, h8 {
+        font-weight: 400;
+      }
     </style>
   </head>
   <body>${html}</body>
