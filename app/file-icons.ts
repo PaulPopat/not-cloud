@@ -3,6 +3,8 @@ import { IconName } from "../components/atoms/icon";
 export const ExtensionMap: NodeJS.Dict<IconName> = {
   ".json": "file-text",
   ".md": "file-text",
+  ".docx": "file-text",
+  ".ncloud": "file-text",
   ".png": "image",
   ".jpg": "image",
   ".jpeg": "image",

@@ -11,6 +11,7 @@ import { EditTag } from "../components/constructs/password/tag";
 import { Classes, CopyString } from "../util/html";
 import { AlertContext } from "../components/alert-context";
 import { IconName } from "../components/atoms/icon";
+import { BuildNav } from "../app/nav";
 
 type Unpromise<T extends Promise<any>> = T extends Promise<infer U> ? U : never;
 
@@ -133,16 +134,14 @@ export default function Page(
         <title>Passwords | Not Cloud</title>
       </Head>
       <Navbar
-        brand="Passwords"
-        items={[
-          { click: "/", name: "Home" },
-          { click: "/files", name: "Files" },
+        brand="Not Cloud"
+        items={BuildNav([
           {
             click: () => set_editing_password(true),
             name: "Create a Password",
           },
           { click: () => set_editing_tag(true), name: "Create a Tag" },
-        ]}
+        ])}
       >
         <Search form={search} set_form={set_search} submit={() => {}}>
           <Search.InlineText

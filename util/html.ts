@@ -80,3 +80,15 @@ export function FormatBytes(bytes: number, decimals = 2) {
 
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
 }
+
+export function LoadScript(src: string) {
+  return new Promise<void>((res, rej) => {
+    var script = document.createElement("script");
+    script.onload = function () {
+      res();
+    };
+    script.src = src;
+
+    document.head.appendChild(script);
+  });
+}

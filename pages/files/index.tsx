@@ -3,6 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 import { Api } from "../../app/api";
+import { BuildNav } from "../../app/nav";
 import { Button, H2, P } from "../../components/atoms";
 import { Navbar } from "../../components/constructs";
 import { CardView } from "../../components/constructs/files/card-view";
@@ -50,21 +51,23 @@ export default function Page(
       </Head>
       <Navbar
         brand="Not Cloud"
-        items={[
-          {
-            click: "/",
-            name: "Home",
-          },
-          {
-            click: "/passwords",
-            name: "Passwords",
-          },
+        items={BuildNav([
           {
             click: () => set_creating(true),
             name: "New Folder",
           },
-        ]}
-      ></Navbar>
+          {
+            click: () => set_mode("table"),
+            name: "Table View",
+            disabled: mode === "table",
+          },
+          {
+            click: () => set_mode("card"),
+            name: "Card View",
+            disabled: mode === "card",
+          },
+        ])}
+      />
       <Container>
         <Row>
           <Column>
@@ -124,27 +127,6 @@ export default function Page(
               value={props.space.used}
               max={props.space.total}
             />
-          </Column>
-        </Row>
-        <Row>
-          <Column>
-            <Button
-              type="button"
-              colour="primary"
-              click={() => set_mode("table")}
-              disabled={mode === "table"}
-            >
-              Table View
-            </Button>
-            &nbsp;
-            <Button
-              type="button"
-              colour="primary"
-              click={() => set_mode("card")}
-              disabled={mode === "card"}
-            >
-              Card View
-            </Button>
           </Column>
         </Row>
         {mode === "table" && (

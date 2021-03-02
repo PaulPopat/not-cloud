@@ -3,6 +3,7 @@ import Fs from "fs-extra";
 import Path from "path";
 import { File } from "formidable";
 import Cp from "child_process";
+import Mammoth from "mammoth";
 
 const root = process.env.ROOT_DIR as string;
 Assert(IsString, root);
@@ -35,6 +36,25 @@ export async function PrepareDownload(path: string) {
 
   const stat = await Fs.stat(start);
   return { stat, stream: Fs.createReadStream(start) };
+}
+
+export async function GetFileString(path: string) {
+  const start = Path.join(root, path);
+  if (!(await Fs.pathExists(start))) {
+    return undefined;
+  }
+
+  return await Fs.readFile(start, "utf-8");
+}
+
+export async function Exists(path: string) {
+  const start = Path.join(root, path);
+  return await Fs.pathExists(start);
+}
+
+export async function WriteFileString(path: string, text: string) {
+  const start = Path.join(root, path);
+  await Fs.outputFile(start, text, "utf-8");
 }
 
 export async function Download(path: string, file: File | File[]) {
@@ -87,4 +107,14 @@ export function GetSpace() {
       rej("No storage info");
     });
   });
+}
+
+export async function ToHtml(path: string) {
+  const start = Path.join(root, path);
+  if (!Fs.pathExists(start) || !start.endsWith(".docx")) {
+    return undefined;
+  }
+
+  const result = await Mammoth.convertToHtml({ path: start });
+  return result.value;
 }

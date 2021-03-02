@@ -208,6 +208,21 @@ export const Api = Build(
         url: "/files/diskspace",
         returns: IsObject({ used: IsNumber, total: IsNumber }),
       },
+      NCloudFile: {
+        Get: {
+          method: "GET",
+          url: "/files/ncloud/:path",
+          parameters: { path: IsString },
+          returns: IsObject({ data: IsString }),
+        },
+        Write: {
+          method: "PUT",
+          url: "/files/ncloud/:path",
+          parameters: { path: IsString },
+          body: IsObject({ data: IsString }),
+          returns: DoNotCare,
+        },
+      },
     },
   },
   {

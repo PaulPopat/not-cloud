@@ -8,14 +8,22 @@ type NavbarDropdownProps = {
   name: string;
   items: { click: string | (() => void); name: string; disabled?: boolean }[];
 };
+
+export type NavbarItems = (
+  | { click: string | (() => void); name: string; disabled?: boolean }
+  | NavbarDropdownProps
+)[];
+
 const NavbarDropdown: React.FC<NavbarDropdownProps> = ({ name, items }) => {
   const [open, set_open] = React.useState(false);
   const router = useRouter();
   return (
     <>
       <a
-        className={Classes("nav-link dropdown-toggle", { show: open })}
-        href="#"
+        className={Classes("nav-link dropdown-toggle text-white", {
+          show: open,
+        })}
+        href="/"
         role="button"
         aria-expanded={open ? "true" : "false"}
         onClick={(e) => {
@@ -63,10 +71,7 @@ declare const ResizeObserver: any;
 
 type NavbarProps = {
   brand: string;
-  items: (
-    | { click: string | (() => void); name: string; disabled?: boolean }
-    | NavbarDropdownProps
-  )[];
+  items: NavbarItems;
 };
 export const Navbar: React.FC<NavbarProps> = ({ children, brand, items }) => {
   const [open, set_open] = React.useState(false);

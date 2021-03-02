@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { ExtensionMap } from "../../../app/file-icons";
+import { GetFileLink } from "../../../app/file-link";
 import { FormatBytes } from "../../../util/html";
 import { Icon } from "../../atoms";
 import { Column, Row } from "../../layout";
@@ -48,6 +49,10 @@ export const TableView: React.FC<{
                 const pb = b.name.toLowerCase();
                 return pa < pb ? -1 : pa > pb ? 1 : 0;
               })
+              .map((c) => ({
+                ...c,
+                download_url: GetFileLink(c.type, c.download_url),
+              }))
               .map((c) => (
                 <tr key={c.name}>
                   <td>
@@ -64,17 +69,12 @@ export const TableView: React.FC<{
                     />
                   </td>
                   <td>
-                    {c.type === "directory" ? (
-                      <Link href={router.asPath + "/" + c.name}>
+                    {c.download_url.type === "internal" ? (
+                      <Link href={c.download_url.href}>
                         <a>{c.name + c.extension}</a>
                       </Link>
                     ) : (
-                      <a
-                        href={`/api/files/download?path=${encodeURIComponent(
-                          c.download_url
-                        )}`}
-                        target="_blank"
-                      >
+                      <a href={c.download_url.href} target="_blank">
                         {c.name + c.extension}
                       </a>
                     )}
@@ -104,7 +104,7 @@ export const TableView: React.FC<{
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        set_deleting(c.download_url);
+                        set_deleting(c.download_url.original);
                       }}
                     >
                       <Icon

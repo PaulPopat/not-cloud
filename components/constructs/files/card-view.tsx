@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { ExtensionMap } from "../../../app/file-icons";
+import { GetFileLink } from "../../../app/file-link";
 import { FormatBytes } from "../../../util/html";
 import { Icon, P } from "../../atoms";
 import { Column, Row } from "../../layout";
@@ -33,8 +34,12 @@ export const CardView: React.FC<{
           const pb = b.name.toLowerCase();
           return pa < pb ? -1 : pa > pb ? 1 : 0;
         })
+        .map((c) => ({
+          ...c,
+          download_url: GetFileLink(c.type, c.download_url),
+        }))
         .map((c) => (
-          <Column xs="12" md="6" lg="4">
+          <Column xs="12" md="6" lg="4" key={c.name}>
             <Card>
               <Row>
                 <Column xs="8">
@@ -50,17 +55,15 @@ export const CardView: React.FC<{
                       height="24"
                       valign="sub"
                     />{" "}
-                    {c.type === "directory" ? (
-                      <Link href={router.asPath + "/" + c.name}>
+                    {c.download_url.type === "internal" ? (
+                      <Link href={c.download_url.href}>
                         <a style={{ textDecoration: "none" }}>
                           {c.name + c.extension}
                         </a>
                       </Link>
                     ) : (
                       <a
-                        href={`/api/files/download?path=${encodeURIComponent(
-                          c.download_url
-                        )}`}
+                        href={c.download_url.href}
                         target="_blank"
                         style={{ textDecoration: "none" }}
                       >
@@ -91,7 +94,7 @@ export const CardView: React.FC<{
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        set_deleting(c.download_url);
+                        set_deleting(c.download_url.original);
                       }}
                     >
                       <Icon
