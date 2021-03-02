@@ -11,7 +11,7 @@ export default BuildApi({
   GET: async (query) => {
     Assert(IsObject({ path: IsArray(IsString) }), query);
     const path = query.path.join("/");
-    if (path.endsWith(".docx") && !Exists(path.replace(".docx", ".ncloud"))) {
+    if (path.endsWith(".docx") && !await Exists(path.replace(".docx", ".ncloud"))) {
       const download = await ToHtml(query.path.join("/"));
       if (!download) {
         return { status: 404 };
