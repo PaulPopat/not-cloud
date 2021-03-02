@@ -21,7 +21,7 @@ type LinkButtonProps = {
 };
 
 function ButtonClasses(props: ButtonCommonProps) {
-  return Classes("btn", {
+  return Classes("btn", "mb-3", {
     [`btn-${props.colour}`]: !props.outline,
     [`btn-outline-${props.colour}`]: props.outline,
     [`btn-${props.size}`]: props.size,

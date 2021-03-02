@@ -203,6 +203,11 @@ export const Api = Build(
         body: IsObject({ add: IsString }),
         returns: DoNotCare,
       },
+      FreeSpace: {
+        method: "GET",
+        url: "/files/diskspace",
+        returns: IsObject({ used: IsNumber, total: IsNumber }),
+      },
     },
   },
   {

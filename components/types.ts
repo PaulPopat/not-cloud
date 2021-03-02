@@ -29,3 +29,5 @@ export type ImageModel = {
   src: string;
   alt: string;
 };
+
+export type Align = "start" | "center" | "end";

@@ -2,6 +2,7 @@ import { Assert, IsString } from "@paulpopat/safe-type";
 import Fs from "fs-extra";
 import Path from "path";
 import { File } from "formidable";
+import Cp from "child_process";
 
 const root = process.env.ROOT_DIR as string;
 Assert(IsString, root);
@@ -58,4 +59,32 @@ export async function Rename(path: string, to: string) {
 export async function CreateDirectory(path: string, add: string) {
   const start = Path.join(root, path);
   await Fs.mkdir(Path.join(start, add));
+}
+
+export function GetSpace() {
+  return new Promise<{ used: number; total: number }>((res, rej) => {
+    const ps = Cp.spawn("df", ["-k", root]);
+    let _ret = "";
+
+    ps.stdout.on("data", function (data) {
+      _ret = data.toString();
+    });
+
+    ps.on("error", function (err) {
+      rej(err);
+    });
+
+    ps.on("close", function () {
+      if (_ret.split("\n")[1]) {
+        const arr = _ret.split("\n")[1].split(/[\s,]+/);
+        const used = parseInt(arr[2].replace("", "")) * 1024;
+        res({
+          used: used,
+          total: parseInt(arr[3].replace("", "")) * 1024 + used,
+        });
+      }
+
+      rej("No storage info");
+    });
+  });
 }

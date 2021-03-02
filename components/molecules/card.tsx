@@ -1,4 +1,5 @@
 import React, { PropsWithChildren } from "react";
+import { Classes } from "../../util/html";
 import * as BS from "../types";
 
 type CardProps = {
@@ -7,7 +8,7 @@ type CardProps = {
 
 export const Card = Object.assign(
   ({ children, image }: PropsWithChildren<CardProps>) => (
-    <div className="card">
+    <div className="card mb-3">
       {image && (
         <img src={image.src} className="card-img-top" alt={image.alt} />
       )}
@@ -16,10 +17,12 @@ export const Card = Object.assign(
   ),
   {
     Title: ({ children }: PropsWithChildren<{}>) => (
-      <h5 className="card-title">{children}</h5>
+      <h5 className="card-title mb-3">{children}</h5>
     ),
-    Text: ({ children }: PropsWithChildren<{}>) => (
-      <p className="card-text">{children}</p>
+    Text: ({ children, align }: PropsWithChildren<{ align?: BS.Align }>) => (
+      <p className={Classes("card-text", { [`text-${align}`]: align })}>
+        {children}
+      </p>
     ),
     Subtitle: ({ children }: PropsWithChildren<{}>) => (
       <h6 className="card-subtitle mb-2 text-muted">{children}</h6>

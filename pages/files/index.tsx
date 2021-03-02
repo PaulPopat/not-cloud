@@ -1,33 +1,23 @@
 import { InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { Api } from "../../app/api";
-import { ExtensionMap } from "../../app/file-icons";
-import { Button, H2, Icon, P } from "../../components/atoms";
+import { Button, H2, P } from "../../components/atoms";
 import { Navbar } from "../../components/constructs";
+import { CardView } from "../../components/constructs/files/card-view";
+import { TableView } from "../../components/constructs/files/table-view";
 import { CreateForm, Field, FileDrop } from "../../components/constructs/form";
 import { Column, Container, Row } from "../../components/layout";
-import { Breadcrumbs, Modal } from "../../components/molecules";
-
-function FormatBytes(bytes: number, decimals = 2) {
-  if (bytes === 0) return "0 Bytes";
-
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-}
+import { Breadcrumbs, Modal, ProgressBar } from "../../components/molecules";
+import { FormatBytes } from "../../util/html";
 
 export const getServerSideProps = async () => {
   return {
     props: {
       content: await Api.Files.ReadDirectory({ path: "" }),
       base: "",
+      space: await Api.Files.FreeSpace(),
     },
   };
 };
@@ -39,12 +29,14 @@ export default function Page(
 ) {
   const [content, set_content] = React.useState(props.content);
   const [deleting, set_deleting] = React.useState("");
-  React.useEffect(() => {
-    set_content(props.content);
-  }, [props.content]);
   const [creating, set_creating] = React.useState(false);
   const [editing, set_editing] = React.useState("");
   const [form, set_form] = React.useState(Form.Default);
+  const [mode, set_mode] = React.useState<"table" | "card">("card");
+
+  React.useEffect(() => {
+    set_content(props.content);
+  }, [props.content]);
 
   React.useEffect(() => {
     set_form({ ...form, name: { ...form.name, value: editing } });
@@ -103,7 +95,7 @@ export default function Page(
           </Column>
         </Row>
         <Row>
-          <Column>
+          <Column xs="12" lg="6">
             <Breadcrumbs>
               <Breadcrumbs.Item href={"/files"}>Home</Breadcrumbs.Item>
               {props.base.split("/").map((b, i, items) =>
@@ -120,108 +112,55 @@ export default function Page(
               )}
             </Breadcrumbs>
           </Column>
+          <Column xs="12" lg="3">
+            <P align="end">
+              Using {FormatBytes(props.space.used)} of{" "}
+              {FormatBytes(props.space.total)}
+            </P>
+          </Column>
+          <Column xs="12" lg="3">
+            <ProgressBar
+              colour="success"
+              value={props.space.used}
+              max={props.space.total}
+            />
+          </Column>
         </Row>
         <Row>
           <Column>
-            <table className="table">
-              <thead>
-                <tr>
-                  <td scope="col" width="50"></td>
-                  <td scope="col">Name</td>
-                  <td scope="col" width="150">
-                    Size
-                  </td>
-                  <td scope="col" width="200">
-                    Last Edited
-                  </td>
-                  <td scope="col" width="75"></td>
-                </tr>
-              </thead>
-              <tbody>
-                {content
-                  .sort((a, b) => {
-                    if (a.type !== b.type) {
-                      return a.type === "directory" ? -1 : 1;
-                    }
-
-                    const pa = a.name.toLowerCase();
-                    const pb = b.name.toLowerCase();
-                    return pa < pb ? -1 : pa > pb ? 1 : 0;
-                  })
-                  .map((c) => (
-                    <tr key={c.name}>
-                      <td>
-                        <Icon
-                          is={
-                            c.type === "directory"
-                              ? "folder"
-                              : ExtensionMap[c.extension] ?? "file"
-                          }
-                          colour="dark"
-                          width="20"
-                          height="20"
-                          valign="sub"
-                        />
-                      </td>
-                      <td>
-                        {c.type === "directory" ? (
-                          <Link href={router.asPath + "/" + c.name}>
-                            <a>{c.name + c.extension}</a>
-                          </Link>
-                        ) : (
-                          <a
-                            href={`/api/files/download?path=${encodeURIComponent(
-                              c.download_url
-                            )}`}
-                            target="_blank"
-                          >
-                            {c.name + c.extension}
-                          </a>
-                        )}
-                      </td>
-                      <td>
-                        {c.type === "directory" ? "N/A" : FormatBytes(c.size)}
-                      </td>
-                      <td>{new Date(c.edited).toLocaleString()}</td>
-                      <td>
-                        <a
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            set_editing(c.name + c.extension);
-                          }}
-                        >
-                          <Icon
-                            is="edit"
-                            colour="dark"
-                            width="20"
-                            height="20"
-                            valign="sub"
-                          />
-                        </a>
-                        &nbsp;
-                        <a
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            set_deleting(c.download_url);
-                          }}
-                        >
-                          <Icon
-                            is="trash"
-                            colour="dark"
-                            width="20"
-                            height="20"
-                            valign="sub"
-                          />
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+            <Button
+              type="button"
+              colour="primary"
+              click={() => set_mode("table")}
+              disabled={mode === "table"}
+            >
+              Table View
+            </Button>
+            &nbsp;
+            <Button
+              type="button"
+              colour="primary"
+              click={() => set_mode("card")}
+              disabled={mode === "card"}
+            >
+              Card View
+            </Button>
           </Column>
         </Row>
+        {mode === "table" && (
+          <TableView
+            content={content}
+            set_deleting={set_deleting}
+            set_editing={set_editing}
+          />
+        )}
+        {mode === "card" && (
+          <CardView
+            content={content}
+            set_deleting={set_deleting}
+            set_editing={set_editing}
+          />
+        )}
       </Container>
       <Modal
         show={deleting != ""}

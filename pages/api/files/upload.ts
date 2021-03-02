@@ -15,6 +15,8 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   const { fields, files } = await new Promise<{ fields: Fields; files: Files }>(
     (resolve, reject) => {
       const form = new IncomingForm();
+      // We have to set the limit somewhere. Two terabytes should do it.
+      form.maxFileSize = 2e+12;
 
       form.parse(req, (err, fields, files) => {
         if (err) return reject(err);
