@@ -128,6 +128,17 @@ export default function Page(props: Props) {
             >
               Extract PDF
             </Button>
+            &nbsp;
+            <Button
+              click={async () => {
+                await save();
+                window.open(`/api/files/download/${props.save_to}`);
+              }}
+              type="button"
+              colour="secondary"
+            >
+              Download Not Cloud File
+            </Button>
           </Column>
         </Row>
       </Container>
