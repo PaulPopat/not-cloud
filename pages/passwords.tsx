@@ -223,9 +223,8 @@ export default function Page(
                 .filter(
                   (p) =>
                     filtering.length === 0 ||
-                    p.tags.find(
-                      (t) => filtering.find((f) => f === t.id) != null
-                    ) != null
+                    filtering.filter((f) => p.tags.find((t) => t.id === f))
+                      .length === filtering.length
                 )
                 .filter((p) => {
                   if (!term) {
