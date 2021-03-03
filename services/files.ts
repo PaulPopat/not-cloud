@@ -66,12 +66,22 @@ export function Download(path: string, file: File | File[]) {
   const pipe = Fs.createReadStream(file.path).pipe(Fs.createWriteStream(start));
   return new Promise<void>((res, rej) => {
     pipe.on("end", async () => {
-      await Fs.remove(file.path);
+      try {
+        await Fs.remove(file.path);
+      } catch{}
+      res();
+    });
+    pipe.on("close", async () => {
+      try {
+        await Fs.remove(file.path);
+      } catch{}
       res();
     });
 
     pipe.on("error", async () => {
-      await Fs.remove(file.path);
+      try {
+        await Fs.remove(file.path);
+      } catch{}
       rej();
     });
   });
