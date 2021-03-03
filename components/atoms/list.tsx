@@ -6,22 +6,6 @@ type ListGroupProps = {
   flush?: boolean;
   horizontal?: BS.Size;
 };
-const ListInternal: React.FC<ListGroupProps> = ({
-  flush,
-  horizontal,
-  children,
-}) => (
-  <div
-    className={Classes("list-group", {
-      "list-group-flush": flush,
-      "list-group-horizontal": horizontal === "xs",
-      [`list-group-horizontal-${horizontal}`]:
-        horizontal && horizontal !== "xs",
-    })}
-  >
-    {children}
-  </div>
-);
 
 type ListGroupItemProps = {
   active?: boolean;
@@ -41,31 +25,45 @@ function ListItemClass(props: ListGroupItemProps) {
   });
 }
 
-export const List = Object.assign(ListInternal, {
-  Item: (props: PropsWithChildren<ListGroupItemProps>) => (
+export const List = Object.assign(
+  ({ flush, horizontal, children }: PropsWithChildren<ListGroupProps>) => (
     <div
-      className={ListItemClass(props)}
-      aria-current={props.active ? "true" : undefined}
-      aria-disabled={props.disabled ? "true" : undefined}
+      className={Classes("list-group", "shadow-sm", "mb-3", {
+        "list-group-flush": flush,
+        "list-group-horizontal": horizontal === "xs",
+        [`list-group-horizontal-${horizontal}`]:
+          horizontal && horizontal !== "xs",
+      })}
     >
-      {props.children}
+      {children}
     </div>
   ),
-  Button: (
-    props: PropsWithChildren<ListGroupItemProps & { click: () => void }>
-  ) => (
-    <a
-      href="#"
-      onClick={(e) => {
-        e.preventDefault();
-        props.click();
-      }}
-      role="button"
-      className={ListItemClass(props)}
-      aria-current={props.active ? "true" : undefined}
-      aria-disabled={props.disabled ? "true" : undefined}
-    >
-      {props.children}
-    </a>
-  ),
-});
+  {
+    Item: (props: PropsWithChildren<ListGroupItemProps>) => (
+      <div
+        className={ListItemClass(props)}
+        aria-current={props.active ? "true" : undefined}
+        aria-disabled={props.disabled ? "true" : undefined}
+      >
+        {props.children}
+      </div>
+    ),
+    Button: (
+      props: PropsWithChildren<ListGroupItemProps & { click: () => void }>
+    ) => (
+      <a
+        href="#"
+        onClick={(e) => {
+          e.preventDefault();
+          props.click();
+        }}
+        role="button"
+        className={ListItemClass(props)}
+        aria-current={props.active ? "true" : undefined}
+        aria-disabled={props.disabled ? "true" : undefined}
+      >
+        {props.children}
+      </a>
+    ),
+  }
+);

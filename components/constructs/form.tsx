@@ -151,7 +151,11 @@ export function CreateForm<T extends Form>(default_value: T) {
 
         return (
           <div className="mb-3">
-            <label htmlFor={"c" + value.id} className="form-label">
+            <label
+              htmlFor={"c" + value.id}
+              className="form-label"
+              style={{ padding: "0 0.75rem" }}
+            >
               {props.children}
             </label>
             <input
@@ -197,7 +201,11 @@ export function CreateForm<T extends Form>(default_value: T) {
 
         return (
           <>
-            <label htmlFor={"c" + value.id} className="form-label">
+            <label
+              htmlFor={"c" + value.id}
+              className="form-label"
+              style={{ padding: "0 0.75rem" }}
+            >
               {props.children}
             </label>
             <div className="input-group mb-3">
@@ -237,7 +245,11 @@ export function CreateForm<T extends Form>(default_value: T) {
 
         return (
           <div className="mb-3">
-            <label htmlFor={"c" + value.id} className="form-label">
+            <label
+              htmlFor={"c" + value.id}
+              className="form-label"
+              style={{ padding: "0 0.75rem" }}
+            >
               {props.children}
             </label>
             <textarea

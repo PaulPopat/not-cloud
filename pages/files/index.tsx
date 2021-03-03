@@ -50,7 +50,6 @@ export default function Page(
         <title>Files | Not Cloud</title>
       </Head>
       <Navbar
-        brand="Not Cloud"
         items={BuildNav([
           {
             click: () => set_creating(true),

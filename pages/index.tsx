@@ -12,7 +12,7 @@ export default function Page() {
       <Head>
         <title>Not Cloud</title>
       </Head>
-      <Navbar brand="Not Cloud" items={BuildNav([])} />
+      <Navbar items={BuildNav([])} />
       <Container>
         <Row>
           <Column>

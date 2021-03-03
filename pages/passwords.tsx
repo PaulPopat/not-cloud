@@ -125,7 +125,7 @@ export default function Page(
   const [current_password, set_current_password] = React.useState("");
   const [editing_tag, set_editing_tag] = React.useState(false);
   const [current_tag, set_current_tag] = React.useState("");
-  const [filtering, set_filtering] = React.useState("");
+  const [filtering, set_filtering] = React.useState([] as string[]);
   const [search, set_search] = React.useState(Search.Default);
   const term = (search.term.value as string)?.toLowerCase() ?? "";
   return (
@@ -134,7 +134,6 @@ export default function Page(
         <title>Passwords | Not Cloud</title>
       </Head>
       <Navbar
-        brand="Not Cloud"
         items={BuildNav([
           {
             click: () => set_editing_password(true),
@@ -154,16 +153,15 @@ export default function Page(
       <Container>
         <Row>
           <Column xs="12" md="3">
-            <H1>Tags</H1>
             <List>
-              {filtering && (
+              {filtering.length > 0 && (
                 <List.Item>
                   <a
                     href="#"
                     className={Classes("flex-fill")}
                     onClick={(e) => {
                       e.preventDefault();
-                      set_filtering("");
+                      set_filtering([]);
                     }}
                   >
                     Clear
@@ -176,16 +174,24 @@ export default function Page(
                   const pb = b.name.toLowerCase();
                   return pa < pb ? -1 : pa > pb ? 1 : 0;
                 })
+                .map((t) => ({
+                  ...t,
+                  filtering: filtering.find((f) => f === t.id) != null,
+                }))
                 .map((t) => (
-                  <List.Item key={t.id} active={t.id === filtering} spaced>
+                  <List.Item key={t.id} active={t.filtering} spaced>
                     <a
                       href="#"
                       className={Classes("flex-fill", {
-                        "text-white": t.id === filtering,
+                        "text-white": t.filtering,
                       })}
                       onClick={(e) => {
                         e.preventDefault();
-                        set_filtering(t.id);
+                        set_filtering(
+                          t.filtering
+                            ? filtering.filter((f) => f !== t.id)
+                            : [...filtering, t.id]
+                        );
                       }}
                     >
                       {t.name}
@@ -201,7 +207,7 @@ export default function Page(
                     >
                       <Icon
                         is="edit"
-                        colour={t.id === filtering ? "light" : "primary"}
+                        colour={t.filtering ? "light" : "primary"}
                         width="20"
                         height="20"
                         valign="sub"
@@ -212,12 +218,14 @@ export default function Page(
             </List>
           </Column>
           <Column xs="12" md="9">
-            <H1>Passwords</H1>
             <List>
               {passwords
                 .filter(
                   (p) =>
-                    !filtering || p.tags.find((t) => t.id === filtering) != null
+                    filtering.length === 0 ||
+                    p.tags.find(
+                      (t) => filtering.find((f) => f === t.id) != null
+                    ) != null
                 )
                 .filter((p) => {
                   if (!term) {

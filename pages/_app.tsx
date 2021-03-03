@@ -27,7 +27,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <div
           style={{
             position: "fixed",
-            top: "60px",
+            top: "72px",
             left: "0",
             width: "100%",
             zIndex: 1,

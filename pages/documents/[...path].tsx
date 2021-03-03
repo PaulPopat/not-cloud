@@ -83,7 +83,7 @@ export default function Page(props: Props) {
       <Head>
         <title>Document | Not Cloud</title>
       </Head>
-      <Navbar brand="Not Cloud" items={BuildNav([])} />
+      <Navbar items={BuildNav([])} />
       <Container>
         <Row>
           <Column>

@@ -25,7 +25,7 @@ export const Modal: React.FC<{
       })}
     >
       <div className="modal-content">
-        <div className="modal-header">
+        <div className="modal-header bg-light">
           <h5 className="modal-title">{title}</h5>
           <button
             type="button"
@@ -35,7 +35,7 @@ export const Modal: React.FC<{
           ></button>
         </div>
         <div className="modal-body">{children}</div>
-        {footer && <div className="modal-footer">{footer}</div>}
+        {footer && <div className="modal-footer bg-light">{footer}</div>}
       </div>
     </div>
   </div>

@@ -42,7 +42,7 @@ export const CardView: React.FC<{
           <Column xs="12" md="6" lg="4" key={c.name}>
             <Card>
               <Row>
-                <Column xs="8">
+                <Column xs="12" space>
                   <Card.Title>
                     <Icon
                       is={
@@ -57,62 +57,52 @@ export const CardView: React.FC<{
                     />{" "}
                     {c.download_url.type === "internal" ? (
                       <Link href={c.download_url.href}>
-                        <a style={{ textDecoration: "none" }}>
-                          {c.name + c.extension}
-                        </a>
+                        <a>{c.name + c.extension}</a>
                       </Link>
                     ) : (
-                      <a
-                        href={c.download_url.href}
-                        target="_blank"
-                        style={{ textDecoration: "none" }}
-                      >
+                      <a href={c.download_url.href} target="_blank">
                         {c.name + c.extension}
                       </a>
                     )}
                   </Card.Title>
-                </Column>
-                <Column xs="4">
-                  <P align="end">
-                    <a
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        set_editing(c.name + c.extension);
-                      }}
-                    >
-                      <Icon
-                        is="edit"
-                        colour="dark"
-                        width="24"
-                        height="24"
-                        valign="sub"
-                      />
-                    </a>
-                    &nbsp;
-                    <a
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        set_deleting(c.download_url.original);
-                      }}
-                    >
-                      <Icon
-                        is="trash"
-                        colour="dark"
-                        width="24"
-                        height="24"
-                        valign="sub"
-                      />
-                    </a>
-                  </P>
+                  {c.type === "file" && (
+                    <Card.Text align="end">{FormatBytes(c.size)}</Card.Text>
+                  )}
                 </Column>
               </Row>
               <Row>
                 <Column xs="4">
-                  {c.type === "file" && (
-                    <Card.Text>{FormatBytes(c.size)}</Card.Text>
-                  )}
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      set_editing(c.name + c.extension);
+                    }}
+                  >
+                    <Icon
+                      is="edit"
+                      colour="dark"
+                      width="24"
+                      height="24"
+                      valign="sub"
+                    />
+                  </a>
+                  &nbsp;
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      set_deleting(c.download_url.original);
+                    }}
+                  >
+                    <Icon
+                      is="trash"
+                      colour="dark"
+                      width="24"
+                      height="24"
+                      valign="sub"
+                    />
+                  </a>
                 </Column>
                 <Column xs="8">
                   <Card.Text align="end">

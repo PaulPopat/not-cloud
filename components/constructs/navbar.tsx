@@ -20,7 +20,7 @@ const NavbarDropdown: React.FC<NavbarDropdownProps> = ({ name, items }) => {
   return (
     <>
       <a
-        className={Classes("nav-link dropdown-toggle text-white", {
+        className={Classes("nav-link dropdown-toggle", {
           show: open,
         })}
         href="/"
@@ -70,10 +70,9 @@ const NavbarDropdown: React.FC<NavbarDropdownProps> = ({ name, items }) => {
 declare const ResizeObserver: any;
 
 type NavbarProps = {
-  brand: string;
   items: NavbarItems;
 };
-export const Navbar: React.FC<NavbarProps> = ({ children, brand, items }) => {
+export const Navbar: React.FC<NavbarProps> = ({ children, items }) => {
   const [open, set_open] = React.useState(false);
   const [height, set_height] = React.useState(56);
   const element = React.useRef<HTMLElement>(null);
@@ -94,13 +93,13 @@ export const Navbar: React.FC<NavbarProps> = ({ children, brand, items }) => {
   return (
     <>
       <nav
-        className="navbar navbar-expand-lg navbar-light bg-primary"
+        className="navbar navbar-expand-lg navbar-light bg-light"
         style={{ position: "fixed", top: 0, left: 0, width: "100%", zIndex: 1 }}
         ref={element}
       >
         <div className="container">
-          <a className="navbar-brand text-white" href="/">
-            {brand}
+          <a className="navbar-brand" href="/" title="Not Cloud">
+            <img src="/favicon/icon.svg" alt="Not Cloud" height="40" />
           </a>
           <button
             className="navbar-toggler"
@@ -121,7 +120,7 @@ export const Navbar: React.FC<NavbarProps> = ({ children, brand, items }) => {
                   ) : IsString(i.click) ? (
                     <Link href={i.click}>
                       <a
-                        className={Classes("nav-link text-light", {
+                        className={Classes("nav-link", {
                           active: router.pathname === i.click,
                           disabled: i.disabled,
                         })}
@@ -137,7 +136,7 @@ export const Navbar: React.FC<NavbarProps> = ({ children, brand, items }) => {
                         Assert(IsFunction, i.click);
                         i.click();
                       }}
-                      className={Classes("nav-link text-light", {
+                      className={Classes("nav-link", {
                         disabled: i.disabled,
                       })}
                     >
@@ -151,7 +150,7 @@ export const Navbar: React.FC<NavbarProps> = ({ children, brand, items }) => {
           </div>
         </div>
       </nav>
-      <div style={{ marginBottom: height }} />
+      <div style={{ marginBottom: height + 20 }} />
     </>
   );
 };
