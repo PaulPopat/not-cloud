@@ -57,13 +57,24 @@ export async function WriteFileString(path: string, text: string) {
   await Fs.outputFile(start, text, "utf-8");
 }
 
-export async function Download(path: string, file: File | File[]) {
+export function Download(path: string, file: File | File[]) {
   if (Array.isArray(file)) {
     throw new Error("Attempted to upload multiple files");
   }
 
   const start = Path.join(root, path);
-  await Fs.writeFile(start, await Fs.readFile(file.path));
+  const pipe = Fs.createReadStream(file.path).pipe(Fs.createWriteStream(start));
+  return new Promise<void>((res, rej) => {
+    pipe.on("end", async () => {
+      await Fs.remove(file.path);
+      res();
+    });
+
+    pipe.on("error", async () => {
+      await Fs.remove(file.path);
+      rej();
+    });
+  });
 }
 
 export async function Delete(path: string) {

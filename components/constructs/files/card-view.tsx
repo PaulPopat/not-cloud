@@ -110,9 +110,9 @@ export const CardView: React.FC<{
               </Row>
               <Row>
                 <Column xs="4">
-                  <Card.Text>
-                    {c.type === "directory" ? "N/A" : FormatBytes(c.size)}
-                  </Card.Text>
+                  {c.type === "file" && (
+                    <Card.Text>{FormatBytes(c.size)}</Card.Text>
+                  )}
                 </Column>
                 <Column xs="8">
                   <Card.Text align="end">

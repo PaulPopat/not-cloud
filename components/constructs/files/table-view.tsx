@@ -80,7 +80,7 @@ export const TableView: React.FC<{
                     )}
                   </td>
                   <td>
-                    {c.type === "directory" ? "N/A" : FormatBytes(c.size)}
+                    {c.type === "directory" ? "" : FormatBytes(c.size)}
                   </td>
                   <td>{new Date(c.edited).toLocaleString()}</td>
                   <td>
