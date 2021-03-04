@@ -183,7 +183,7 @@ export function CreateForm<T extends Form>(default_value: T) {
             type="text"
             id={"c" + value.id}
             autoComplete={props.autocomplete}
-            className="form-control"
+            className="form-control bg-white"
             placeholder={props.placeholder}
             value={input_value}
             onChange={(e) => {
