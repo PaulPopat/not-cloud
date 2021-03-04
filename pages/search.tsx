@@ -76,7 +76,7 @@ export default function Page(props: Props) {
               download_url: GetFileLink(c.type, c.download_url),
             }))
             .map((c) => (
-              <Column xs="12" md="6" lg="4" key={c.name}>
+              <Column xs="12" md="6" lg="4" key={c.download_url.original}>
                 <Card>
                   <Row>
                     <Column xs="12" space>
