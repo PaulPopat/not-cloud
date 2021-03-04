@@ -17,3 +17,7 @@ export const H5: React.FC = ({ children }) => (
 export const P: React.FC<{ align?: BS.Align }> = ({ children, align }) => (
   <p className={Classes("mb-3", { [`text-${align}`]: align })}>{children}</p>
 );
+
+export const Small: React.FC = ({ children }) => (
+  <small className="text-muted">{children}</small>
+);

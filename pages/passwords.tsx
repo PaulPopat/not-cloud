@@ -12,8 +12,7 @@ import { Classes, CopyString } from "../util/html";
 import { AlertContext } from "../components/alert-context";
 import { IconName } from "../components/atoms/icon";
 import { BuildNav } from "../app/nav";
-
-type Unpromise<T extends Promise<any>> = T extends Promise<infer U> ? U : never;
+import { Unpromise } from "../util/types";
 
 export const getServerSideProps = async () => {
   return {

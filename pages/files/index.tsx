@@ -25,6 +25,10 @@ export const getServerSideProps = async () => {
 
 const Form = CreateForm({ name: Field("") });
 
+const Search = CreateForm({
+  term: Field(""),
+});
+
 export default function Page(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
@@ -32,8 +36,10 @@ export default function Page(
   const [deleting, set_deleting] = React.useState("");
   const [creating, set_creating] = React.useState(false);
   const [editing, set_editing] = React.useState("");
+  const [new_ncloud, set_new_ncloud] = React.useState(false);
   const [form, set_form] = React.useState(Form.Default);
   const [mode, set_mode] = React.useState<"table" | "card">("card");
+  const [search, set_search] = React.useState(Search.Default);
 
   React.useEffect(() => {
     set_content(props.content);
@@ -56,6 +62,10 @@ export default function Page(
             name: "New Folder",
           },
           {
+            click: () => set_new_ncloud(true),
+            name: "Create New Document",
+          },
+          {
             click: () => set_mode("table"),
             name: "Table View",
             disabled: mode === "table",
@@ -66,7 +76,21 @@ export default function Page(
             disabled: mode === "card",
           },
         ])}
-      />
+      >
+        <Search
+          form={search}
+          set_form={set_search}
+          submit={(f) => {
+            router.push(`/search?term=${encodeURIComponent(f.term)}`);
+          }}
+        >
+          <Search.InlineText
+            for={(s) => s.term}
+            autocomplete="off"
+            placeholder="Search"
+          />
+        </Search>
+      </Navbar>
       <Container>
         <Row>
           <Column>
@@ -173,7 +197,14 @@ export default function Page(
         set_form={set_form}
         submit={async (f) => {
           try {
-            if (editing) {
+            if (new_ncloud) {
+              const path = props.base + "/" + f.name + ".ncloud";
+              await Api.Files.NCloudFile.Write(
+                { path: path },
+                { data: "<p></p>" }
+              );
+              router.push(`/documents/${encodeURI(path)}`);
+            } else if (editing) {
               await Api.Files.Rename(
                 { path: props.base + "/" + editing },
                 { to: f.name as string }
@@ -188,25 +219,37 @@ export default function Page(
             set_content(await Api.Files.ReadDirectory({ path: props.base }));
             set_editing("");
             set_creating(false);
+            set_new_ncloud(false);
             set_form(Form.Default);
           }
         }}
       >
         <Modal
-          show={editing != "" || creating}
+          show={editing != "" || creating || new_ncloud}
           close={() => {
             set_editing("");
             set_creating(false);
             set_form(Form.Default);
+            set_new_ncloud(false);
           }}
-          title={editing ? <>Rename</> : <>Create Folder</>}
+          title={
+            new_ncloud ? (
+              <>New Document</>
+            ) : editing ? (
+              <>Rename</>
+            ) : (
+              <>Create Folder</>
+            )
+          }
           footer={
             <Button type="submit" colour="primary">
               Submit
             </Button>
           }
         >
-          <Form.Text for={(f) => f.name} autocomplete="off" />
+          <Form.Text for={(f) => f.name} autocomplete="off">
+            Name
+          </Form.Text>
         </Modal>
       </Form>
     </>

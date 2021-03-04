@@ -4,6 +4,7 @@ import Path from "path";
 import { File } from "formidable";
 import Cp from "child_process";
 import Mammoth from "mammoth";
+import Glob from "glob";
 
 const root = process.env.ROOT_DIR as string;
 Assert(IsString, root);
@@ -68,20 +69,20 @@ export function Download(path: string, file: File | File[]) {
     pipe.on("end", async () => {
       try {
         await Fs.remove(file.path);
-      } catch{}
+      } catch {}
       res();
     });
     pipe.on("close", async () => {
       try {
         await Fs.remove(file.path);
-      } catch{}
+      } catch {}
       res();
     });
 
     pipe.on("error", async () => {
       try {
         await Fs.remove(file.path);
-      } catch{}
+      } catch {}
       rej();
     });
   });
@@ -138,4 +139,41 @@ export async function ToHtml(path: string) {
 
   const result = await Mammoth.convertToHtml({ path: start });
   return result.value;
+}
+
+export function Search(term: string) {
+  return new Promise<
+    {
+      name: string;
+      extension: string;
+      type: "directory" | "file";
+      created: number;
+      edited: number;
+      size: number;
+      download_url: string;
+    }[]
+  >((res, rej) => {
+    Glob(Path.join(root, "**", term), async (err, matches) => {
+      if (err) {
+        rej(err);
+        return;
+      }
+
+      const result = [];
+      for (const match of matches) {
+        const stat = await Fs.stat(match);
+        result.push({
+          name: Path.basename(match, Path.extname(match)),
+          extension: Path.extname(match),
+          type: stat.isDirectory() ? ("directory" as const) : ("file" as const),
+          created: stat.ctime.getTime(),
+          edited: stat.mtime.getTime(),
+          size: stat.size,
+          download_url: Path.relative(root, match).replace(/\\/gm, "/"),
+        });
+      }
+
+      res(result);
+    });
+  });
 }

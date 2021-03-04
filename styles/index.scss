@@ -50,6 +50,8 @@ $border-color: $white;
 
 $input-bg: $gray-100;
 
+$small-font-size: 0.75em;
+
 @import "../node_modules/bootstrap/scss/bootstrap";
 @import "_svg";
 @import "_form";

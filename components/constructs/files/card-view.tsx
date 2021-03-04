@@ -4,7 +4,7 @@ import React from "react";
 import { ExtensionMap } from "../../../app/file-icons";
 import { GetFileLink } from "../../../app/file-link";
 import { FormatBytes } from "../../../util/html";
-import { Icon, P } from "../../atoms";
+import { Icon, P, Small } from "../../atoms";
 import { Column, Row } from "../../layout";
 import { Card } from "../../molecules";
 
@@ -57,13 +57,14 @@ export const CardView: React.FC<{
                     />{" "}
                     {c.download_url.type === "internal" ? (
                       <Link href={c.download_url.href}>
-                        <a>{c.name + c.extension}</a>
+                        <a>{c.name}</a>
                       </Link>
                     ) : (
                       <a href={c.download_url.href} target="_blank">
-                        {c.name + c.extension}
+                        {c.name}
                       </a>
                     )}
+                    <Small>{c.extension}</Small>
                   </Card.Title>
                   {c.type === "file" && (
                     <Card.Text align="end">{FormatBytes(c.size)}</Card.Text>

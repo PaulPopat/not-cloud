@@ -2,15 +2,22 @@ import React from "react";
 import { v4 as Guid } from "uuid";
 import { AppProps } from "next/app";
 import "../styles/index.scss";
+import Router from "next/router";
 import { AlertContext } from "../components/alert-context";
 import { ThemeColour } from "../components/types";
-import { Alert } from "../components/atoms";
+import { Alert, Icon, Transition } from "../components/atoms";
 import { Column, Container, Row } from "../components/layout";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [alerts, set_alerts] = React.useState<
     { id: string; html: JSX.Element; type: ThemeColour }[]
   >([]);
+  const [loading, set_loading] = React.useState(false);
+
+  Router.events.on("routeChangeStart", () => set_loading(true));
+  Router.events.on("routeChangeComplete", () => set_loading(false));
+  Router.events.on("routeChangeError", () => set_loading(false));
+
   return (
     <AlertContext.Provider
       value={{
@@ -47,6 +54,34 @@ export default function App({ Component, pageProps }: AppProps) {
         </div>
       )}
       <Component {...pageProps} />
+      <Transition
+        show={loading}
+        hidden={{
+          width: "100vw",
+          height: "100vh",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          zIndex: 99999,
+          opacity: 0,
+          transition: "opacity 500ms",
+        }}
+        shown={{ opacity: 1 }}
+        time={500}
+      >
+        <div
+          className="bg-white"
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Icon is="loading" colour="dark" width="300" height="300" />
+        </div>
+      </Transition>
     </AlertContext.Provider>
   );
 }

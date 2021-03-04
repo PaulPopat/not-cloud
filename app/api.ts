@@ -223,6 +223,22 @@ export const Api = Build(
           returns: DoNotCare,
         },
       },
+      Search: {
+        method: "GET",
+        url: "/files/search",
+        parameters: { term: IsString },
+        returns: IsArray(
+          IsObject({
+            name: IsString,
+            extension: IsString,
+            type: IsUnion(IsLiteral("directory"), IsLiteral("file")),
+            created: IsNumber,
+            edited: IsNumber,
+            size: IsNumber,
+            download_url: IsString,
+          })
+        ),
+      },
     },
   },
   {

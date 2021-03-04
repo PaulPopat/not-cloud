@@ -3,6 +3,7 @@ import React from "react";
 import { BuildNav } from "../app/nav";
 import { Button, H1, H5, P } from "../components/atoms";
 import { Navbar } from "../components/constructs";
+import { NCloudDocs } from "../components/constructs/files/ncloud-docs";
 import { Column, Container, Row } from "../components/layout";
 import { Card } from "../components/molecules";
 
@@ -45,10 +46,7 @@ export default function Page() {
           <Column xs="12" md="6" lg="4">
             <Card>
               <H5>Docs</H5>
-              <P>Document editor for your cloud files</P>
-              <Button.Link href="/documents" colour="primary" disabled>
-                Coming soon
-              </Button.Link>
+              <NCloudDocs />
             </Card>
           </Column>
         </Row>
