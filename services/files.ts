@@ -1,10 +1,11 @@
-import { Assert, IsString } from "@paulpopat/safe-type";
+import { Assert, IsObject, IsString } from "@paulpopat/safe-type";
 import Fs from "fs-extra";
 import Path from "path";
 import { File } from "formidable";
 import Cp from "child_process";
 import Mammoth from "mammoth";
 import Glob from "glob";
+import { Execute } from "./database";
 
 const root = process.env.ROOT_DIR as string;
 Assert(IsString, root);
@@ -55,6 +56,19 @@ export async function Exists(path: string) {
 
 export async function WriteFileString(path: string, text: string) {
   const start = Path.join(root, path);
+  if (start.endsWith(".ncloud")) {
+    await Execute(async (db) => {
+      await db.Run(
+        `INSERT OR REPLACE INTO Documents (path, edited)
+         VALUES ($path, $edited)`,
+        {
+          $path: start,
+          $edited: new Date().getTime(),
+        }
+      );
+    });
+  }
+
   await Fs.outputFile(start, text, "utf-8");
 }
 
@@ -90,6 +104,14 @@ export function Download(path: string, file: File | File[]) {
 
 export async function Delete(path: string) {
   const start = Path.join(root, path);
+  if (start.endsWith(".ncloud")) {
+    await Execute(async (db) => {
+      await db.Run(`DELETE FROM Documents WHERE path = $path`, {
+        $path: start,
+      });
+    });
+  }
+
   await Fs.remove(start);
 }
 
@@ -152,16 +174,35 @@ export function Search(term: string) {
       size: number;
       download_url: string;
     }[]
-  >((res, rej) => {
-    Glob(Path.join(root, "**", term), async (err, matches) => {
-      if (err) {
-        rej(err);
-        return;
-      }
-
+  >(async (res, rej) => {
+    const process_paths = async (paths: string[]) => {
       const result = [];
-      for (const match of matches) {
+      for (const match of paths) {
+        if (!(await Fs.pathExists(match))) {
+          if (match.endsWith(".ncloud")) {
+            await Execute(async (db) => {
+              await db.Run(`DELETE FROM Documents WHERE path = $path`, {
+                $path: match,
+              });
+            });
+          }
+
+          continue;
+        }
+
         const stat = await Fs.stat(match);
+        if (!stat.isFile()) {
+          if (match.endsWith(".ncloud")) {
+            await Execute(async (db) => {
+              await db.Run(`DELETE FROM Documents WHERE path = $path`, {
+                $path: match,
+              });
+            });
+          }
+
+          continue;
+        }
+
         result.push({
           name: Path.basename(match, Path.extname(match)),
           extension: Path.extname(match),
@@ -173,7 +214,24 @@ export function Search(term: string) {
         });
       }
 
-      res(result);
+      return result;
+    };
+
+    if (term === "*.ncloud") {
+      const paths = await Execute((db) =>
+        db.All(`SELECT path FROM Documents`, IsObject({ path: IsString }))
+      );
+      res(await process_paths(paths.map((p) => p.path)));
+      return;
+    }
+
+    Glob(Path.join(root, "**", term), async (err, matches) => {
+      if (err) {
+        rej(err);
+        return;
+      }
+
+      res(await process_paths(matches));
     });
   });
 }

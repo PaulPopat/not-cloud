@@ -11,12 +11,14 @@ import { BuildNav } from "../../app/nav";
 import Head from "next/head";
 import { AlertContext } from "../../components/alert-context";
 
-type Props = {
-  content: string;
-  save_to: string;
-  parts: string[];
-  name: string;
-};
+type Props =
+  | {
+      content: string;
+      save_to: string;
+      parts: string[];
+      name: string;
+    }
+  | {};
 
 export const getServerSideProps: GetServerSideProps<Props> = async (
   context
@@ -25,16 +27,25 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   const location = IsArray(IsString)(path) ? path.join("/") : path ?? "";
   const save_to = location.replace(".docx", ".ncloud");
   const parts = save_to.split("/");
-  const response = await Api.Files.NCloudFile.Get({ path: location });
+  try {
+    const response = await Api.Files.NCloudFile.Get({ path: location });
 
-  return {
-    props: {
-      content: response.data,
-      save_to,
-      parts: parts.slice(0, parts.length - 1),
-      name: parts[parts.length - 1],
-    },
-  };
+    return {
+      props: {
+        content: response.data,
+        save_to,
+        parts: parts.slice(0, parts.length - 1),
+        name: parts[parts.length - 1],
+      },
+    };
+  } catch (err) {
+    context.res.statusCode = 302;
+    context.res.setHeader(
+      "Location",
+      "/" + ["files", ...parts.slice(0, parts.length - 1)].join("/")
+    );
+    return { props: {} };
+  }
 };
 
 function IsHandler(event: KeyboardEvent) {
@@ -46,8 +57,12 @@ function IsHandler(event: KeyboardEvent) {
 }
 
 export default function Page(props: Props) {
-  const [content, set_content] = React.useState(props.content);
+  if (!("content" in props)) {
+    return <></>;
+  }
+
   const { alert } = React.useContext(AlertContext);
+  const [content, set_content] = React.useState(props.content);
 
   const save = async () => {
     try {

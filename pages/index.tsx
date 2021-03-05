@@ -1,13 +1,25 @@
+import { InferGetServerSidePropsType } from "next";
 import Head from "next/head";
+import Link from "next/link";
 import React from "react";
+import { Api } from "../app/api";
 import { BuildNav } from "../app/nav";
-import { Button, H1, H5, P } from "../components/atoms";
+import { Button, H1, H5, P, Small } from "../components/atoms";
 import { Navbar } from "../components/constructs";
-import { NCloudDocs } from "../components/constructs/files/ncloud-docs";
 import { Column, Container, Row } from "../components/layout";
 import { Card } from "../components/molecules";
 
-export default function Page() {
+export const getServerSideProps = async () => {
+  return {
+    props: {
+      documents: await Api.Files.Search({ term: "*.ncloud" }),
+    },
+  };
+};
+
+export default function Page(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) {
   return (
     <>
       <Head>
@@ -46,7 +58,22 @@ export default function Page() {
           <Column xs="12" md="6" lg="4">
             <Card>
               <H5>Docs</H5>
-              <NCloudDocs />
+              {props.documents
+                .sort((a, b) => b.edited - a.edited)
+                .filter((_, i) => i < 5)
+                .map((i) => (
+                  <Row key={i.download_url}>
+                    <Column>
+                      <P>
+                        <Link href={`/documents/${encodeURI(i.download_url)}`}>
+                          <a>{i.name}</a>
+                        </Link>
+                        <br />
+                        <Small>{i.download_url}</Small>
+                      </P>
+                    </Column>
+                  </Row>
+                ))}
             </Card>
           </Column>
         </Row>
