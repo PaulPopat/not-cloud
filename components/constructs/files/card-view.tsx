@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import { ExtensionMap } from "../../../app/file-icons";
+import { ExtensionMap } from "../../../app/file-extensions";
 import { GetFileLink } from "../../../app/file-link";
 import { FormatBytes } from "../../../util/html";
 import { Icon, P, Small } from "../../atoms";
@@ -48,7 +48,7 @@ export const CardView: React.FC<{
                       is={
                         c.type === "directory"
                           ? "folder"
-                          : ExtensionMap[c.extension] ?? "file"
+                          : ExtensionMap(c.extension) ?? "file"
                       }
                       colour="dark"
                       width="24"

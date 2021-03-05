@@ -8,6 +8,7 @@ type ButtonCommonProps = {
   outline?: boolean;
   size?: BS.Size;
   disabled?: boolean;
+  "no-margin"?: boolean;
 };
 
 type ButtonProps = {
@@ -21,11 +22,12 @@ type LinkButtonProps = {
 };
 
 function ButtonClasses(props: ButtonCommonProps) {
-  return Classes("btn", "mb-3", {
+  return Classes("btn", {
     [`btn-${props.colour}`]: !props.outline,
     [`btn-outline-${props.colour}`]: props.outline,
     [`btn-${props.size}`]: props.size,
     disabled: props.disabled,
+    "mb-3": !props["no-margin"],
   });
 }
 

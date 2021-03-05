@@ -1,8 +1,10 @@
+import { IsString } from "@paulpopat/safe-type";
 import { InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 import { Api } from "../../app/api";
+import { ExtensionMap } from "../../app/file-extensions";
 import { BuildNav } from "../../app/nav";
 import { Button, H2, P } from "../../components/atoms";
 import { Navbar } from "../../components/constructs";
@@ -12,6 +14,7 @@ import { CreateForm, Field, FileDrop } from "../../components/constructs/form";
 import { Column, Container, Row } from "../../components/layout";
 import { Breadcrumbs, Modal, ProgressBar } from "../../components/molecules";
 import { FormatBytes } from "../../util/html";
+import Mime from "mime-types";
 
 export const getServerSideProps = async () => {
   return {
@@ -32,6 +35,7 @@ const Search = CreateForm({
 export default function Page(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
+  const router = useRouter();
   const [content, set_content] = React.useState(props.content);
   const [deleting, set_deleting] = React.useState("");
   const [creating, set_creating] = React.useState(false);
@@ -49,7 +53,6 @@ export default function Page(
     set_form({ ...form, name: { ...form.name, value: editing } });
   }, [editing]);
 
-  const router = useRouter();
   return (
     <>
       <Head>
@@ -250,6 +253,54 @@ export default function Page(
           <Form.Text for={(f) => f.name} autocomplete="off">
             Name
           </Form.Text>
+        </Modal>
+        <Modal
+          show={IsString(router.query.view)}
+          close={() => router.push(router.asPath.split("?")[0])}
+          title={<>{router.query.view}</>}
+          size="xl"
+          footer={
+            <>
+              {IsString(router.query.view) && (
+                <Button.External
+                  colour="success"
+                  href={`/api/files/download/${encodeURI(
+                    props.base
+                  )}/${encodeURI(router.query.view)}`}
+                  no-margin
+                >
+                  Download
+                </Button.External>
+              )}
+            </>
+          }
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "-1rem",
+            }}
+          >
+            {IsString(router.query.view) &&
+              (ExtensionMap(router.query.view) === "image" ? (
+                <img
+                  src={`/api/files/download/${encodeURI(
+                    props.base
+                  )}/${encodeURI(router.query.view)}`}
+                />
+              ) : (
+                <video width="100%" controls>
+                  <source
+                    src={`/api/files/download/${encodeURI(
+                      props.base
+                    )}/${encodeURI(router.query.view)}`}
+                    type={Mime.lookup(router.query.view) || undefined}
+                  />
+                </video>
+              ))}
+          </div>
         </Modal>
       </Form>
     </>
