@@ -6,8 +6,8 @@
     "**/CVS": true,
     "**/.DS_Store": true,
     ".vscode": true,
-    "node_modules": true,
-    ".next": true,
-    ".res": true
+    "not-cloud-server/node_modules": true,
+    "not-cloud-server/.next": true,
+    "not-cloud-server/.res": true
   }
 }
