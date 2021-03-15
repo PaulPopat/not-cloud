@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    command: ["node_modules/.bin/next", "start"]
+    restart: unless-stopped
+    volumes:
+      - /mnt/sdb/not-cloud:/file-store
+    environment:
+      - NEXT_PUBLIC_BASE_URL=http://192.168.0.100:3000
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: not_cloud
+      POSTGRES_PASSWORD: password
+    ports:
+      - "8001:5432"
+    restart: unless-stopped

@@ -7,8 +7,7 @@ import Mammoth from "mammoth";
 import Glob from "glob";
 import { Execute } from "./database";
 
-const root = process.env.ROOT_DIR as string;
-Assert(IsString, root);
+const root = "/file-store";
 
 export async function* GetDirectory(path: string) {
   const start = Path.join(root, path);
@@ -58,13 +57,14 @@ export async function WriteFileString(path: string, text: string) {
   const start = Path.join(root, path);
   if (start.endsWith(".ncloud")) {
     await Execute(async (db) => {
-      await db.Run(
-        `INSERT OR REPLACE INTO Documents (path, edited)
-         VALUES ($path, $edited)`,
-        {
-          $path: start,
-          $edited: new Date().getTime(),
-        }
+      await db.Perform(
+        `INSERT INTO documents (path, edited)
+         VALUES ($1, $2)
+         ON CONFLICT (path)
+         DO
+           UPDATE SET edited = EXCLUDED.edited`,
+        start,
+        Math.floor(new Date().getTime() / 60000)
       );
     });
   }
@@ -106,9 +106,7 @@ export async function Delete(path: string) {
   const start = Path.join(root, path);
   if (start.endsWith(".ncloud")) {
     await Execute(async (db) => {
-      await db.Run(`DELETE FROM Documents WHERE path = $path`, {
-        $path: start,
-      });
+      await db.Perform(`DELETE FROM documents WHERE path = $1`, start);
     });
   }
 
@@ -139,8 +137,10 @@ export function GetSpace() {
     });
 
     ps.on("close", function () {
-      if (_ret.split("\n")[1]) {
-        const arr = _ret.split("\n")[1].split(/[\s,]+/);
+      // Docker likes to put the disk space on a different line on the first run.
+      const data = _ret.split("\n")[1] || _ret.split("\n")[0];
+      if (data) {
+        const arr = data.split(/[\s,]+/);
         const used = parseInt(arr[2].replace("", "")) * 1024;
         res({
           used: used,
@@ -181,9 +181,7 @@ export function Search(term: string) {
         if (!(await Fs.pathExists(match))) {
           if (match.endsWith(".ncloud")) {
             await Execute(async (db) => {
-              await db.Run(`DELETE FROM Documents WHERE path = $path`, {
-                $path: match,
-              });
+              await db.Perform(`DELETE FROM documents WHERE path = $1`, match);
             });
           }
 
@@ -194,9 +192,7 @@ export function Search(term: string) {
         if (!stat.isFile()) {
           if (match.endsWith(".ncloud")) {
             await Execute(async (db) => {
-              await db.Run(`DELETE FROM Documents WHERE path = $path`, {
-                $path: match,
-              });
+              await db.Perform(`DELETE FROM documents WHERE path = $1`, match);
             });
           }
 
@@ -219,7 +215,7 @@ export function Search(term: string) {
 
     if (term === "*.ncloud") {
       const paths = await Execute((db) =>
-        db.All(`SELECT path FROM Documents`, IsObject({ path: IsString }))
+        db.Query(`SELECT path FROM documents`, IsObject({ path: IsString }))
       );
       res(await process_paths(paths.map((p) => p.path)));
       return;

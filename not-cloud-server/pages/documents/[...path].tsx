@@ -10,6 +10,7 @@ import { Navbar } from "../../components/constructs";
 import { BuildNav } from "../../app/nav";
 import Head from "next/head";
 import { AlertContext } from "../../components/alert-context";
+import { jsPDF as Pdf } from "jspdf";
 
 type Props =
   | {
@@ -134,9 +135,47 @@ export default function Page(props: Props) {
             <Button
               click={async () => {
                 await save();
-                window.open(
-                  `/api/files/pdf/${props.save_to.replace(".ncloud", ".pdf")}`
+                const doc = new Pdf();
+                await doc.html(
+                  `<html>
+                <head>
+                  <meta charset="UTF-8">
+                  <style>
+                    body {
+                      font: 16px/1.6 "Helvetica Neue", Helvetica, Arial, sans-serif;
+                    }
+              
+                    p {
+                      font-size: 1em;
+                      line-height: 1.63em;
+                      padding-top: 0.5em;
+                      margin-bottom: 1.13em;
+                    }
+              
+                    h1 {
+                      font-weight: 400;
+                    }
+              
+                    h2 {
+                      font-size: 2.18em;
+                      font-weight: 400;
+                    }
+              
+                    h3 {
+                      font-size: 1.75em;
+                      font-weight: 400;
+                    }
+                  </style>
+                </head>
+                <body>${content}</body>
+              </html>`,
+                  {
+                    margin: 15,
+                  }
                 );
+
+                // It is possible that the name could not end in ncloud
+                doc.save(props.name.replace(".ncloud", "") + ".pdf");
               }}
               type="button"
               colour="secondary"

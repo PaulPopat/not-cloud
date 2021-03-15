@@ -2,18 +2,11 @@ import { IsObject, IsString } from "@paulpopat/safe-type";
 import { Execute } from "./database";
 import { v4 as Guid } from "uuid";
 
-type ResultPassword = {
-  id: string;
-  name: string;
-  url: string;
-  tags: { id: string; name: string }[];
-};
-
 export async function GetAllPasswords() {
   return await Execute(async (db) => {
-    const result = [] as ResultPassword[];
-    for (const password of await db.All(
-      `SELECT id, name, username, url FROM Passwords`,
+    const result = [];
+    for (const password of await db.Query(
+      `SELECT id, name, username, url FROM passwords`,
       IsObject({
         id: IsString,
         name: IsString,
@@ -21,13 +14,13 @@ export async function GetAllPasswords() {
         url: IsString,
       })
     )) {
-      const tags = await db.All(
+      const tags = await db.Query(
         `SELECT t.id, t.name
-         FROM Password_Tags t
-         INNER JOIN Password_Tag_Matches m ON m.tag = t.id
-         WHERE m.password = $id`,
+         FROM password_tags t
+         INNER JOIN password_tag_matches m ON m.tag = t.id
+         WHERE m.password = $1`,
         IsObject({ id: IsString, name: IsString }),
-        { $id: password.id }
+        password.id
       );
 
       result.push({ ...password, tags });
@@ -39,10 +32,10 @@ export async function GetAllPasswords() {
 
 export async function GetPassword(id: string) {
   return await Execute(async (db) => {
-    const password = await db.Get(
+    const password = await db.QuerySingle(
       `SELECT id, name, url, username, password, description
-       FROM Passwords
-       WHERE id = $id`,
+       FROM passwords
+       WHERE id = $1`,
       IsObject({
         id: IsString,
         name: IsString,
@@ -51,16 +44,16 @@ export async function GetPassword(id: string) {
         password: IsString,
         description: IsString,
       }),
-      { $id: id }
+      id
     );
 
-    const tags = await db.All(
+    const tags = await db.Query(
       `SELECT t.id, t.name
-         FROM Password_Tags t
-         INNER JOIN Password_Tag_Matches m ON m.tag = t.id
-         WHERE m.password = $id`,
+       FROM password_tags t
+       INNER JOIN password_tag_matches m ON m.tag = t.id
+       WHERE m.password = $1`,
       IsObject({ id: IsString, name: IsString }),
-      { $id: password.id }
+      password.id
     );
 
     return { ...password, tags };
@@ -79,24 +72,20 @@ type AddPassword = {
 export async function AddPassword(password: AddPassword) {
   const id = Guid();
   await Execute(async (db) => {
-    await db.Run(
-      `INSERT INTO Passwords (id, name, url, username, password, description)
-       VALUES ($id, $name, $url, $username, $password, $description)`,
-      {
-        $id: id,
-        $url: password.url,
-        $name: password.name,
-        $username: password.username,
-        $password: password.password,
-        $description: password.description,
-      }
+    await db.Perform(
+      `INSERT INTO passwords (id, name, url, username, password, description)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      id,
+      password.name,
+      password.url,
+      password.username,
+      password.password,
+      password.description
     );
 
-    await db.ForAll(
-      `INSERT INTO Password_Tag_Matches (id, password, tag) VALUES ($id, $password, $tag)`,
-      password.tags
-        .filter((t) => t !== "")
-        .map((t) => ({ $id: Guid(), $password: id, $tag: t }))
+    await db.PerformAll(
+      `INSERT INTO password_tag_matches (id, password, tag) VALUES ($1, $2, $3)`,
+      password.tags.filter((t) => t !== "").map((t) => [Guid(), id, t])
     );
   });
 
@@ -115,35 +104,30 @@ type UpdatePassword = {
 
 export async function UpdatePassword(password: UpdatePassword) {
   await Execute(async (db) => {
-    await db.Run(
-      `UPDATE Passwords
-       SET name = $name,
-           url = $url,
-           username = $username,
-           password = $password,
-           description = $description
-       WHERE id = $id`,
-      {
-        $id: password.id,
-        $name: password.name,
-        $url: password.url,
-        $username: password.username,
-        $password: password.password,
-        $description: password.description,
-      }
+    await db.Perform(
+      `UPDATE passwords
+       SET name = $1,
+           url = $2,
+           username = $3,
+           password = $4,
+           description = $5
+       WHERE id = $6`,
+      password.name,
+      password.url,
+      password.username,
+      password.password,
+      password.description,
+      password.id
     );
 
-    await db.Run(`DELETE FROM Password_Tag_Matches WHERE password = $id`, {
-      $id: password.id,
-    });
+    await db.Perform(
+      `DELETE FROM password_tag_matches WHERE password = $1`,
+      password.id
+    );
 
-    await db.ForAll(
-      `INSERT INTO Password_Tag_Matches (id, password, tag) VALUES ($id, $password, $tag)`,
-      password.tags.map((t) => ({
-        $id: Guid(),
-        $password: password.id,
-        $tag: t,
-      }))
+    await db.PerformAll(
+      `INSERT INTO password_tag_matches (id, password, tag) VALUES ($1, $2, $3)`,
+      password.tags.map((t) => [Guid(), password.id, t])
     );
   });
 
@@ -152,17 +136,18 @@ export async function UpdatePassword(password: UpdatePassword) {
 
 export async function DeletePassword(id: string) {
   await Execute(async (db) => {
-    await db.Run(`DELETE FROM Password_Tag_Matches WHERE password = $id`, {
-      $id: id,
-    });
+    await db.Perform(
+      `DELETE FROM password_tag_matches WHERE password = $1`,
+      id
+    );
 
-    await db.Run(`DELETE FROM Passwords WHERE id = $id`, { $id: id });
+    await db.Perform(`DELETE FROM Passwords WHERE id = $1`, id);
   });
 }
 
 export async function GetAllTags() {
   return await Execute((db) =>
-    db.All(
+    db.Query(
       `SELECT id, name FROM Password_Tags`,
       IsObject({ id: IsString, name: IsString })
     )
@@ -171,19 +156,19 @@ export async function GetAllTags() {
 
 export async function GetTag(id: string) {
   return await Execute(async (db) => {
-    const tag = await db.Get(
-      `SELECT id, name FROM Password_Tags WHERE id = $id`,
+    const tag = await db.QuerySingle(
+      `SELECT id, name FROM Password_Tags WHERE id = $1`,
       IsObject({ id: IsString, name: IsString }),
-      { $id: id }
+      id
     );
 
-    const passwords = await db.All(
+    const passwords = await db.Query(
       `SELECT p.id, p.name
        FROM Passwords p
        INNER JOIN Password_Tag_Matches m ON m.password = p.id
-       WHERE m.tag = $id`,
+       WHERE m.tag = $1`,
       IsObject({ id: IsString, name: IsString }),
-      { $id: id }
+      id
     );
 
     return { ...tag, passwords };
@@ -193,10 +178,11 @@ export async function GetTag(id: string) {
 export async function AddTag(name: string) {
   const id = Guid();
   await Execute(async (db) => {
-    await db.Run(`INSERT INTO Password_Tags (id, name) VALUES ($id, $name)`, {
-      $id: id,
-      $name: name,
-    });
+    await db.Perform(
+      `INSERT INTO Password_Tags (id, name) VALUES ($1, $2)`,
+      id,
+      name
+    );
   });
 
   return await GetTag(id);
@@ -204,11 +190,12 @@ export async function AddTag(name: string) {
 
 export async function UpdateTag(id: string, name: string) {
   await Execute(async (db) => {
-    await db.Run(
+    await db.Perform(
       `UPDATE Password_Tags
-       SET name = $name
-       WHERE id = $id`,
-      { $id: id, $name: name }
+       SET name = $1
+       WHERE id = $2`,
+      name,
+      id
     );
   });
 
@@ -217,16 +204,16 @@ export async function UpdateTag(id: string, name: string) {
 
 export async function DeleteTag(id: string) {
   await Execute(async (db) => {
-    await db.Run(
+    await db.Perform(
       `DELETE FROM Password_Tag_Matches
-       WHERE tag = $id`,
-      { $id: id }
+       WHERE tag = $1`,
+      id
     );
 
-    await db.Run(
+    await db.Perform(
       `DELETE FROM Password_Tags
-       WHERE id = $id`,
-      { $id: id }
+       WHERE id = $1`,
+      id
     );
   });
 }

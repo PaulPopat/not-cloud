@@ -1,26 +1,38 @@
-import Sql from "sqlite3";
+import { Client } from "pg";
 import Fs from "fs-extra";
 import Path from "path";
 import { Assert, Checker, IsArray } from "@paulpopat/safe-type";
 
-const db_path = "./.res/db.db";
-const ver_path = "./.res/ver.db.lock";
 const updates_path = "./update-scripts";
 
 async function GetDb() {
-  if (!(await Fs.pathExists(Path.dirname(db_path)))) {
-    await Fs.mkdir(Path.dirname(db_path));
-  }
-
-  const sqlite = Sql.verbose();
-  return new sqlite.Database(db_path);
+  const client = new Client({
+    user: "not_cloud",
+    host: "db",
+    database: "not_cloud",
+    password: "password",
+    port: 5432,
+  });
+  await client.connect();
+  return client;
 }
+
+type Parameter = string | number | boolean;
 
 async function UpdateDatabase() {
   const db = await GetDb();
-  const current = (await Fs.pathExists(ver_path))
-    ? parseInt(await Fs.readFile(ver_path, "utf-8"))
-    : 0;
+  const current = await (async () => {
+    try {
+      const res = await db.query("SELECT version FROM schema_version");
+      return res.rows[0].version as number;
+    } catch {
+      await db.query(
+        "CREATE TABLE schema_version (version integer PRIMARY KEY)"
+      );
+      await db.query("INSERT INTO schema_version (version) VALUES (0)");
+      return 0;
+    }
+  })();
   const scripts = await Fs.readdir(updates_path);
   if (scripts.length > current) {
     const to_execute = [] as string[];
@@ -30,131 +42,55 @@ async function UpdateDatabase() {
       );
     }
 
-    await Fs.writeFile(ver_path, scripts.length.toString());
-
     try {
-      db.serialize(() => {
-        for (const script of to_execute) {
-          db.exec(script);
-        }
-      });
+      for (const script of to_execute) {
+        await db.query(script);
+      }
     } finally {
-      db.close();
+      await db.query("DELETE FROM schema_version WHERE true");
+      await db.query("INSERT INTO schema_version (version) VALUES ($1)", [
+        scripts.length,
+      ]);
+      await db.end();
     }
   }
 }
 
-type QueryParams = NodeJS.Dict<string | number>;
-
-function Process(db: Sql.Database) {
+function Process(db: Client) {
   return {
-    Get<T>(command: string, check: Checker<T>, params?: QueryParams) {
-      return new Promise<T>((res, rej) => {
-        if (params) {
-          db.all(command, params, (err, rows) => {
-            if (err) {
-              rej(err);
-              return;
-            }
-
-            if (rows.length === 0) {
-              throw new Error("No match for get " + command);
-            }
-
-            if (rows.length > 1) {
-              throw new Error("More than one match for get " + command);
-            }
-
-            Assert(IsArray(check), rows);
-            res(rows[0]);
-          });
-        } else {
-          db.all(command, (err, rows) => {
-            if (err) {
-              rej(err);
-              return;
-            }
-
-            if (rows.length === 0) {
-              throw new Error("No match for get " + command);
-            }
-
-            if (rows.length > 1) {
-              throw new Error("More than one match for get " + command);
-            }
-
-            Assert(IsArray(check), rows);
-            res(rows[0]);
-          });
-        }
-      });
+    async Perform(query: string, ...params: Parameter[]) {
+      await db.query(query, params);
     },
-    All<T>(command: string, check: Checker<T>, params?: QueryParams) {
-      return new Promise<T[]>((res, rej) => {
-        if (params) {
-          db.all(command, params, (err, rows) => {
-            if (err) {
-              rej(err);
-            } else {
-              Assert(IsArray(check), rows);
-              res(rows);
-            }
-          });
-        } else {
-          db.all(command, (err, rows) => {
-            if (err) {
-              rej(err);
-            } else {
-              Assert(IsArray(check), rows);
-              res(rows);
-            }
-          });
-        }
-      });
+    async PerformAll(query: string, params: Parameter[][]) {
+      for (const param of params) {
+        await db.query(query, param);
+      }
     },
-    Run(command: string, params: QueryParams) {
-      return new Promise<void>((res, rej) => {
-        db.run(command, params, (err) => {
-          if (err) {
-            rej(err);
-          } else {
-            res();
-          }
-        });
-      });
-    },
-    async ForAll(command: string, params: QueryParams[]) {
-      const stmt = await new Promise<Sql.Statement>((res, rej) => {
-        db.prepare(command, function (err) {
-          if (err) {
-            rej(err);
-          } else {
-            res(this);
-          }
-        });
-      });
-
-      for (const item of params) {
-        await new Promise<void>((res, rej) => {
-          stmt.run(item, (err) => {
-            if (err) {
-              rej(err);
-            } else {
-              res();
-            }
-          });
-        });
+    async Query<T>(query: string, check: Checker<T>, ...params: Parameter[]) {
+      const response = await db.query(query, params);
+      const result = response.rows;
+      if (!result) {
+        return [];
       }
 
-      await new Promise<void>((res, rej) => {
-        stmt.finalize((err) => {
-          if (err) {
-            rej(err);
-          } else {
-            res();
-          }
-        });
-      });
+      Assert(IsArray(check), result);
+      return result;
+    },
+    async QuerySingle<T>(
+      query: string,
+      check: Checker<T>,
+      ...params: Parameter[]
+    ) {
+      const response = await db.query(query, params);
+      const result = response.rows;
+      Assert(IsArray(check), result);
+      if (result.length > 1) {
+        throw new Error("More than one match for " + query);
+      } else if (result.length === 0) {
+        throw new Error("No matches for " + query);
+      }
+
+      return result[0];
     },
   };
 }
@@ -173,7 +109,7 @@ export async function Execute<T>(
   try {
     result = await action(Process(db));
   } finally {
-    db.close();
+    await db.end();
   }
 
   return result as T;

@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  web:
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/.next
+      - ./file-store:/file-store
+    command: ["npm", "run", "dev"]
+    restart: "no"
+    environment:
+      - NEXT_PUBLIC_BASE_URL=http://localhost:3000
+    build:
+      context: .
+      dockerfile: DevDockerfile

@@ -4,6 +4,7 @@ import { BuildApi } from "../../../util/api";
 
 export default BuildApi({
   GET: async (query) => {
+    console.log("Started the query");
     Assert(IsObject({ term: IsString }), query);
     return { status: 200, body: await Search(query.term) };
   },
