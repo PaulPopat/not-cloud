@@ -8,8 +8,6 @@ services:
       - ./file-store:/file-store
     command: ["npm", "run", "dev"]
     restart: "no"
-    environment:
-      - NEXT_PUBLIC_BASE_URL=http://localhost:3000
     build:
       context: .
       dockerfile: DevDockerfile

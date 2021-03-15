@@ -8,8 +8,6 @@ services:
     restart: unless-stopped
     volumes:
       - /mnt/sdb/not-cloud:/file-store
-    environment:
-      - NEXT_PUBLIC_BASE_URL=http://192.168.0.100:3000
   db:
     image: postgres
     environment:
