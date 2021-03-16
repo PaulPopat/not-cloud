@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "not-cloud-server"
+		},
+		{
+			"path": "not-cloud-sync"
+		}
+	],
+	"settings": {}
+}
