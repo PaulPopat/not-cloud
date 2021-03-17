@@ -10,6 +10,7 @@
     "src/common": true,
     "dist": true,
     "style": true,
-    ".molecular": true
+    ".molecular": true,
+    "src/style": true
   }
 }

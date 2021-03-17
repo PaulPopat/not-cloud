@@ -8,5 +8,5 @@
       "enableRemoteModule": true
     }
   },
-  "css": "./dist/index.css"
+  "css": "./src/style/index.css"
 }

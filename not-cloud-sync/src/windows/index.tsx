@@ -162,6 +162,8 @@ export default (props: { body: unknown; params: unknown }) => {
                     await new Promise<void>((res) => setTimeout(res, 100));
                     status = await Request("/sync", "status", {});
                   }
+
+                  set_syncing(false);
                 }}
                 disabled={syncing}
               >

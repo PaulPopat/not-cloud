@@ -2,7 +2,7 @@
   "name": "not-cloud-sync",
   "version": "1.0.0",
   "scripts": {
-    "compile:sass": "node-sass style/index.scss -o dist/",
+    "compile:sass": "node-sass style/index.scss -o src/style",
     "dev": "npm run postinstall && npm run compile:sass && molecular dev",
     "postinstall": "rimraf src/common/ && rimraf styles/ && copyfiles -f ../not-cloud-components/src/*.* src/common/ && copyfiles -f ../not-cloud-components/styles/*.* style/",
     "package": "npm run postinstall && npm run compile:sass && molecular package"
