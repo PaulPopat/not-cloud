@@ -11,8 +11,7 @@ import { Icon, Small } from "../common/atoms";
 import { CreateForm, Field } from "../common/form";
 import { Column, Container, Row } from "../common/layout";
 import { Card } from "../common/molecules";
-import { FormatBytes } from "../common/util";
-import { Unpromise } from "../util/types";
+import { FormatBytes, Unpromise } from "../common/util";
 import { Navbar } from "../components/navbar";
 
 type Props = {
