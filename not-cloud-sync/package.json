@@ -1,0 +1,31 @@
+{
+  "name": "not-cloud-sync",
+  "version": "1.0.0",
+  "scripts": {
+    "compile:sass": "node-sass style/index.scss -o dist/",
+    "dev": "npm run postinstall && npm run compile:sass && molecular dev",
+    "postinstall": "rimraf src/common/ && rimraf styles/ && copyfiles -f ../not-cloud-components/src/*.* src/common/ && copyfiles -f ../not-cloud-components/styles/*.* style/",
+    "package": "npm run postinstall && npm run compile:sass && molecular package"
+  },
+  "author": "paulpopat",
+  "license": "ISC",
+  "dependencies": {
+    "@paulpopat/molecular-constructs": "0.0.20",
+    "@paulpopat/safe-type": "^2.1.0",
+    "axios": "^0.21.1",
+    "bootstrap": "^4.6.0",
+    "fs-extra": "^9.1.0",
+    "request": "^2.88.2"
+  },
+  "main": "./.molecular/.library-code/index.js",
+  "devDependencies": {
+    "@types/request": "^2.48.5",
+    "copyfiles": "^2.4.1",
+    "node-sass": "^5.0.0",
+    "rimraf": "^3.0.2"
+  },
+  "build": {
+    "appId": "paul-popat.not-cloud-sync.app",
+    "productName": "Not Cloud Sync"
+  }
+}

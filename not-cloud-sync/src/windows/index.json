@@ -1,0 +1,12 @@
+{
+  "title": "Not Cloud Sync",
+  "window": {
+    "width": 1200,
+    "height": 900,
+    "webPreferences": {
+      "nodeIntegration": true,
+      "enableRemoteModule": true
+    }
+  },
+  "css": "./dist/index.css"
+}

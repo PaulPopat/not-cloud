@@ -9,7 +9,7 @@ import {
   IsType,
   IsUnion,
 } from "@paulpopat/safe-type";
-import { Icon } from "./atoms";
+import { Icon, IconName } from "./atoms";
 
 const IsFormField = IsObject({
   id: IsString,
@@ -144,13 +144,17 @@ export function CreateForm<T extends Form>(default_value: T) {
       );
     },
     {
-      Text: (props: PropsWithChildren<FormItemProps>) => {
+      Text: (
+        props: PropsWithChildren<
+          FormItemProps & { buttons?: { icon: IconName; click: () => void }[] }
+        >
+      ) => {
         const { value, context } = BuildElement(props);
         const input_value = value.value;
         Assert(IsString, input_value);
 
         return (
-          <div className="mb-3">
+          <>
             <label
               htmlFor={"c" + value.id}
               className="form-label"
@@ -158,19 +162,38 @@ export function CreateForm<T extends Form>(default_value: T) {
             >
               {props.children}
             </label>
-            <input
-              type="text"
-              id={"c" + value.id}
-              autoComplete={props.autocomplete}
-              className="form-control"
-              placeholder={props.placeholder}
-              value={input_value}
-              onChange={(e) => {
-                const to_input = e.currentTarget.value;
-                context.set({ id: value.id, value: to_input });
-              }}
-            />
-          </div>
+            <div className="input-group mb-3">
+              <input
+                type="text"
+                id={"c" + value.id}
+                autoComplete={props.autocomplete}
+                className="form-control"
+                placeholder={props.placeholder}
+                value={input_value}
+                onChange={(e) => {
+                  const to_input = e.currentTarget.value;
+                  context.set({ id: value.id, value: to_input });
+                }}
+              />
+              {props.buttons &&
+                props.buttons.map((b, i) => (
+                  <button
+                    key={i}
+                    className="btn btn-primary"
+                    type="button"
+                    onClick={() => b.click()}
+                  >
+                    <Icon
+                      is={b.icon}
+                      colour="light"
+                      width="20"
+                      height="20"
+                      valign="sub"
+                    />
+                  </button>
+                ))}
+            </div>
+          </>
         );
       },
       InlineText: (props: PropsWithChildren<FormItemProps>) => {
