@@ -10,6 +10,7 @@
     ".next": true,
     ".res": true,
     "common": true,
-    "style": true
+    "style": true,
+    "file-store": true
   }
 }
