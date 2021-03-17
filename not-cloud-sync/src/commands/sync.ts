@@ -32,6 +32,7 @@ export async function start() {
       last_message = err.toString();
     })
     .then(() => {
+      Fs.writeFile(Location, new Date().getTime().toString());
       last_message = "Finished Sync";
     });
 

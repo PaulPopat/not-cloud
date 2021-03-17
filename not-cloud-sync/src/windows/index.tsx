@@ -55,8 +55,11 @@ export default (props: { body: unknown; params: unknown }) => {
         <Row>
           <Column>
             <div className="bg-light p-3 rounded mb-3 mt-3">
-              <div className="bg-white p-2 rounded">
-                Status:{" "}
+              <div
+                className="bg-white p-2 rounded"
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                Status:&nbsp;
                 <code style={{ whiteSpace: "nowrap", overflow: "hidden" }}>
                   {status}
                 </code>
@@ -163,6 +166,7 @@ export default (props: { body: unknown; params: unknown }) => {
                     status = await Request("/sync", "status", {});
                   }
 
+                  set_status(status);
                   set_syncing(false);
                 }}
                 disabled={syncing}
