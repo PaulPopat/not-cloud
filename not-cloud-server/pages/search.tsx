@@ -7,12 +7,13 @@ import { Api } from "../app/api";
 import { ExtensionMap } from "../app/file-extensions";
 import { GetFileLink } from "../app/file-link";
 import { BuildNav } from "../app/nav";
-import { Icon, Small } from "../components/atoms";
-import { CreateForm, Field, Navbar } from "../components/constructs";
-import { Column, Container, Row } from "../components/layout";
-import { Card } from "../components/molecules";
-import { FormatBytes } from "../util/html";
+import { Icon, Small } from "../common/atoms";
+import { CreateForm, Field } from "../common/form";
+import { Column, Container, Row } from "../common/layout";
+import { Card } from "../common/molecules";
+import { FormatBytes } from "../common/util";
 import { Unpromise } from "../util/types";
+import { Navbar } from "../components/navbar";
 
 type Props = {
   content: Unpromise<ReturnType<typeof Api["Files"]["Search"]>>;

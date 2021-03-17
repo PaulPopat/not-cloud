@@ -1,4 +1,4 @@
-import { NavbarItems } from "../components/constructs/navbar";
+import { NavbarItems } from "../components/navbar";
 
 export function BuildNav(
   page_actions: {

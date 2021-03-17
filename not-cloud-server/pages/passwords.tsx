@@ -1,18 +1,19 @@
 import { InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { Column, Container, Row } from "../components/layout";
+import { Column, Container, Row } from "../common/layout";
 import React from "react";
 import { Api } from "../app/api";
-import { H1, H5, Icon, List, P } from "../components/atoms";
-import { Modal } from "../components/molecules";
-import { CreateForm, Field, Navbar } from "../components/constructs";
-import { PasswordEditor } from "../components/constructs/password/editor";
-import { EditTag } from "../components/constructs/password/tag";
-import { Classes, CopyString } from "../util/html";
+import { H5, Icon, List } from "../common/atoms";
+import { Modal } from "../common/molecules";
+import { CreateForm, Field } from "../common/form";
+import { PasswordEditor } from "../components/password/editor";
+import { EditTag } from "../components/password/tag";
+import { Classes, CopyString } from "../common/util";
 import { AlertContext } from "../components/alert-context";
-import { IconName } from "../components/atoms/icon";
+import { IconName } from "../common/atoms";
 import { BuildNav } from "../app/nav";
 import { Unpromise } from "../util/types";
+import { Navbar } from "../components/navbar";
 
 export const getServerSideProps = async () => {
   return {

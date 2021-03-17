@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "not-cloud-sync"
+		},
+		{
+			"path": "not-cloud-components"
 		}
 	],
 	"settings": {}

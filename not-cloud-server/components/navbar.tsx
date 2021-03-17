@@ -1,5 +1,5 @@
 import React from "react";
-import { Classes } from "../../util/html";
+import { Classes } from "../common/util";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Assert, IsFunction, IsString } from "@paulpopat/safe-type";
@@ -33,7 +33,10 @@ const NavbarDropdown: React.FC<NavbarDropdownProps> = ({ name, items }) => {
       >
         {name}
       </a>
-      <ul className={Classes("dropdown-menu", { show: open })}>
+      <ul
+        className={Classes("dropdown-menu", "shadow-lg", { show: open })}
+        style={{ zIndex: 2 }}
+      >
         {items.map((i) => (
           <li key={i.name}>
             {IsString(i.click) ? (
@@ -54,6 +57,7 @@ const NavbarDropdown: React.FC<NavbarDropdownProps> = ({ name, items }) => {
                   e.preventDefault();
                   Assert(IsFunction, i.click);
                   i.click();
+                  set_open(false);
                 }}
                 className={Classes("dropdown-item", { disabled: i.disabled })}
               >

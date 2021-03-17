@@ -1,0 +1,12 @@
+{
+  "name": "not-cloud-components",
+  "version": "1.0.0",
+  "scripts": {},
+  "author": "paulpopat",
+  "license": "ISC",
+  "devDependencies": {
+    "@paulpopat/safe-type": "^2.1.0",
+    "@types/node": "^14.14.35",
+    "@types/react": "^17.0.3"
+  }
+}

@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import { ExtensionMap } from "../../../app/file-extensions";
-import { GetFileLink } from "../../../app/file-link";
-import { FormatBytes } from "../../../util/html";
-import { Icon } from "../../atoms";
-import { Column, Row } from "../../layout";
+import { ExtensionMap } from "../../app/file-extensions";
+import { GetFileLink } from "../../app/file-link";
+import { FormatBytes } from "../../common/util";
+import { Icon } from "../../common/atoms";
+import { Column, Row } from "../../common/layout";
 
 export const TableView: React.FC<{
   content: {
@@ -79,9 +79,7 @@ export const TableView: React.FC<{
                       </a>
                     )}
                   </td>
-                  <td>
-                    {c.type === "directory" ? "" : FormatBytes(c.size)}
-                  </td>
+                  <td>{c.type === "directory" ? "" : FormatBytes(c.size)}</td>
                   <td>{new Date(c.edited).toLocaleString()}</td>
                   <td>
                     <a

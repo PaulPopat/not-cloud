@@ -1,5 +1,5 @@
 import React from "react";
-import { LoadScript } from "../../util/html";
+import { LoadScript } from "../common/html";
 
 export const CKEditor: React.FC<{
   content: string;

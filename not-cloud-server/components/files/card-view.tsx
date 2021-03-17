@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import { ExtensionMap } from "../../../app/file-extensions";
-import { GetFileLink } from "../../../app/file-link";
-import { FormatBytes } from "../../../util/html";
-import { Icon, P, Small } from "../../atoms";
-import { Column, Row } from "../../layout";
-import { Card } from "../../molecules";
+import { ExtensionMap } from "../../app/file-extensions";
+import { GetFileLink } from "../../app/file-link";
+import { FormatBytes } from "../../common/util";
+import { Icon, Small } from "../../common/atoms";
+import { Column, Row } from "../../common/layout";
+import { Card } from "../../common/molecules";
 
 export const CardView: React.FC<{
   content: {

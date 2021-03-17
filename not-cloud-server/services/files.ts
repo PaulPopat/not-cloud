@@ -1,4 +1,4 @@
-import { Assert, IsObject, IsString } from "@paulpopat/safe-type";
+import { IsObject, IsString } from "@paulpopat/safe-type";
 import Fs from "fs-extra";
 import Path from "path";
 import { File } from "formidable";

@@ -1,4 +1,4 @@
-import { IconName } from "../components/atoms/icon";
+import { IconName } from "../common/atoms";
 
 const Map: NodeJS.Dict<IconName> = {
   json: "file-text",

@@ -6,10 +6,6 @@
     "**/CVS": true,
     "**/.DS_Store": true,
     ".vscode": true,
-    "node_modules": true,
-    ".next": true,
-    ".res": true,
-    "common": true,
-    "style": true
+    "node_modules": true
   }
 }

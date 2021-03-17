@@ -4,10 +4,10 @@ import Link from "next/link";
 import React from "react";
 import { Api } from "../app/api";
 import { BuildNav } from "../app/nav";
-import { Button, H1, H5, P, Small } from "../components/atoms";
-import { Navbar } from "../components/constructs";
-import { Column, Container, Row } from "../components/layout";
-import { Card } from "../components/molecules";
+import { Button, H1, H5, P, Small } from "../common/atoms";
+import { Navbar } from "../components/navbar";
+import { Column, Container, Row } from "../common/layout";
+import { Card } from "../common/molecules";
 
 export const getServerSideProps = async () => {
   return {

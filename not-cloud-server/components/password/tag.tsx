@@ -1,8 +1,8 @@
 import React from "react";
-import { Column, Container, Row } from "../../layout";
-import { CreateForm, Field } from "../form";
-import { Button } from "../../atoms";
-import { Api } from "../../../app/api";
+import { Column, Container, Row } from "../../common/layout";
+import { CreateForm, Field } from "../../common/form";
+import { Button } from "../../common/atoms";
+import { Api } from "../../app/api";
 import { Assert, IsObject, IsString } from "@paulpopat/safe-type";
 
 const Form = CreateForm({

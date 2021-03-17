@@ -6,14 +6,14 @@ import React from "react";
 import { Api } from "../../app/api";
 import { ExtensionMap } from "../../app/file-extensions";
 import { BuildNav } from "../../app/nav";
-import { Button, H2, P } from "../../components/atoms";
-import { Navbar } from "../../components/constructs";
-import { CardView } from "../../components/constructs/files/card-view";
-import { TableView } from "../../components/constructs/files/table-view";
-import { CreateForm, Field, FileDrop } from "../../components/constructs/form";
-import { Column, Container, Row } from "../../components/layout";
-import { Breadcrumbs, Modal, ProgressBar } from "../../components/molecules";
-import { FormatBytes } from "../../util/html";
+import { Button, H2, P } from "../../common/atoms";
+import { Navbar } from "../../components/navbar";
+import { CardView } from "../../components/files/card-view";
+import { TableView } from "../../components/files/table-view";
+import { CreateForm, Field, FileDrop } from "../../common/form";
+import { Column, Container, Row } from "../../common/layout";
+import { Breadcrumbs, Modal, ProgressBar } from "../../common/molecules";
+import { FormatBytes } from "../../common/util";
 import Mime from "mime-types";
 
 export const getServerSideProps = async () => {

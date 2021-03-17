@@ -1,0 +1,58 @@
+$white: #fff;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+$black: #000;
+
+$blue: #1c1c92;
+$indigo: #6610f2;
+$purple: #5757e0;
+$pink: #f7456e;
+$red: #b90719;
+$orange: #fd9014;
+$yellow: #ffe924;
+$green: #a1f545;
+$teal: #42e76b;
+$cyan: #14f0f0;
+
+$primary: $purple;
+$secondary: $gray-600;
+$success: $green;
+$info: $cyan;
+$warning: $yellow;
+$danger: $red;
+$light: $gray-100;
+$dark: $gray-900;
+
+$link-decoration: none;
+$link-hover-decoration: underline;
+
+$border-radius: 0.4rem;
+$border-radius-sm: 0.3rem;
+$border-radius-lg: 0.5rem;
+$border-radius-pill: 50rem;
+
+$border-width: 0;
+$border-widths: (
+  1: 1px,
+  2: 2px,
+  3: 3px,
+  4: 4px,
+  5: 5px,
+);
+$border-color: $white;
+
+$input-bg: $gray-100;
+
+$small-font-size: 0.75em;
+
+@import "../node_modules/bootstrap/scss/bootstrap";
+@import "_svg";
+@import "_form";
+@import "_ckeditor";

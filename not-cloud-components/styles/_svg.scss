@@ -1,0 +1,26 @@
+.svg {
+  &.primary {
+    stroke: $primary;
+  }
+  &.secondary {
+    stroke: $secondary;
+  }
+  &.success {
+    stroke: $success;
+  }
+  &.info {
+    stroke: $info;
+  }
+  &.warning {
+    stroke: $warning;
+  }
+  &.danger {
+    stroke: $danger;
+  }
+  &.light {
+    stroke: $light;
+  }
+  &.dark {
+    stroke: $dark;
+  }
+}

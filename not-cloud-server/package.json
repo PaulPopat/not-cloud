@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "postinstall": "rimraf common/ && rimraf styles/ && copyfiles -f ../not-cloud-components/src/*.* common/ && copyfiles -f ../not-cloud-components/styles/*.* style/",
+    "docker:dev": "npm run postinstall && docker-compose -f docker-compose.yml -f docker-compose.debug.yml up --build",
+    "docker:prod": "npm run postinstall && docker-compose up --build -d"
   },
   "repository": {
     "type": "git",
@@ -48,6 +51,8 @@
     "@types/react": "^17.0.2",
     "@types/sqlite3": "^3.1.7",
     "@types/uuid": "^8.3.0",
+    "copyfiles": "^2.4.1",
+    "rimraf": "^3.0.2",
     "typescript": "^4.2.2"
   }
 }
