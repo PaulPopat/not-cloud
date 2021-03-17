@@ -8,11 +8,10 @@ import { Modal } from "../common/molecules";
 import { CreateForm, Field } from "../common/form";
 import { PasswordEditor } from "../components/password/editor";
 import { EditTag } from "../components/password/tag";
-import { Classes, CopyString } from "../common/util";
+import { Classes, CopyString, Unpromise } from "../common/util";
 import { AlertContext } from "../components/alert-context";
 import { IconName } from "../common/atoms";
 import { BuildNav } from "../app/nav";
-import { Unpromise } from "../util/types";
 import { Navbar } from "../components/navbar";
 
 export const getServerSideProps = async () => {
