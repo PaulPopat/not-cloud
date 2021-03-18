@@ -55,7 +55,6 @@ export async function PerformSync(
   server_address: string,
   local_target: string,
   remote_target: string,
-  last_run: number,
   progress_callback: (message: string) => void
 ) {
   const axios = Axios.create({ baseURL: server_address });
@@ -145,10 +144,10 @@ export async function PerformSync(
       }
 
       file_count++;
-      if (
-        !content.find((c) => c.type === "file" && FileName(c) === name) ||
-        item.mtime.getTime() > last_run
-      ) {
+      const match = content.find(
+        (c) => c.type === "file" && FileName(c) === name
+      );
+      if (!match || item.mtime.getTime() > match.edited) {
         await new Promise<void>((res, rej) => {
           progress_callback(
             `Uploading ${file_count} files - Current: ${Path.join(
@@ -167,10 +166,12 @@ export async function PerformSync(
             },
             (err, response) => {
               if (err || response.statusCode > 399) {
-                rej({ err, response });
-              } else {
-                res();
+                progress_callback(
+                  "An error has occered for " + Path.join(dir.path, name)
+                );
               }
+
+              res();
             }
           );
         });

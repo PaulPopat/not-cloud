@@ -21,8 +21,8 @@ export async function* GetDirectory(path: string) {
       name: Path.basename(location, Path.extname(location)),
       extension: Path.extname(location),
       type: stat.isDirectory() ? ("directory" as const) : ("file" as const),
-      created: stat.ctime.getTime(),
-      edited: stat.ctime.getTime(),
+      created: stat.birthtime.getTime(),
+      edited: stat.mtime.getTime(),
       size: stat.size,
       download_url: Path.join(path, item),
     };

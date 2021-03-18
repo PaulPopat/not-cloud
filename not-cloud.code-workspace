@@ -1,14 +1,14 @@
 {
-	"folders": [
-		{
-			"path": "not-cloud-server"
-		},
-		{
-			"path": "not-cloud-sync"
-		},
-		{
-			"path": "not-cloud-components"
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "path": "not-cloud-server"
+    },
+    {
+      "path": "not-cloud-sync"
+    },
+    {
+      "path": "not-cloud-components"
+    }
+  ],
+  "settings": {}
 }
