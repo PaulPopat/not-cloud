@@ -3,7 +3,7 @@
 not_cloud_version="NOT_CLOUD_VERSION"
 file_store_location=""
 if [ -d "/etc/not-cloud" ]; then
-  file_store_location=$(< /etc/not-cloud/file-store-location.txt)
+  file_store_location=$(head -n 1 /etc/not-cloud/file-store-location.txt)
 else
   mkdir /etc/not-cloud
   read -p "No config detected. Where would you like to store your files? " file_store_location
