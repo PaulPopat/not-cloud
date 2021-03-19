@@ -11,6 +11,7 @@
     ".res": true,
     "common": true,
     "style": true,
-    "file-store": true
+    "file-store": true,
+    "public/application": true
   }
 }

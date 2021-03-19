@@ -3,9 +3,9 @@ import Head from "next/head";
 import { Column, Container, Row } from "../common/layout";
 import React from "react";
 import { Api } from "../app/api";
-import { H5, Icon, List } from "../common/atoms";
+import { Button, H5, Icon, List, P, H3 } from "../common/atoms";
 import { Modal } from "../common/molecules";
-import { CreateForm, Field } from "../common/form";
+import { CreateForm, Field, FileDrop } from "../common/form";
 import { PasswordEditor } from "../components/password/editor";
 import { EditTag } from "../components/password/tag";
 import { Classes, CopyString, Unpromise } from "../common/util";
@@ -118,6 +118,7 @@ const PasswordItem: React.FC<{
 export default function Page(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
+  const { alert } = React.useContext(AlertContext);
   const [passwords, set_passwords] = React.useState(props.passwords);
   const [tags, set_tags] = React.useState(props.tags);
   const [editing_password, set_editing_password] = React.useState(false);
@@ -126,6 +127,7 @@ export default function Page(
   const [current_tag, set_current_tag] = React.useState("");
   const [filtering, set_filtering] = React.useState([] as string[]);
   const [search, set_search] = React.useState(Search.Default);
+  const [bulk, set_bulk] = React.useState(false);
   const term = (search.term.value as string)?.toLowerCase() ?? "";
   return (
     <>
@@ -139,6 +141,10 @@ export default function Page(
             name: "Create a Password",
           },
           { click: () => set_editing_tag(true), name: "Create a Tag" },
+          {
+            click: () => set_bulk(true),
+            name: "Bulk Edit",
+          },
         ])}
       >
         <Search form={search} set_form={set_search} submit={() => {}}>
@@ -307,6 +313,89 @@ export default function Page(
           }}
           tag={current_tag}
         />
+      </Modal>
+      <Modal
+        show={bulk}
+        close={() => set_bulk(false)}
+        title={<>Bulk Edit</>}
+        footer={
+          <Button
+            type="button"
+            colour="danger"
+            click={async () => {
+              const element = document.createElement("a");
+              element.setAttribute(
+                "href",
+                "data:text/plain;charset=utf-8," +
+                  encodeURIComponent(
+                    JSON.stringify(await Api.Passwords.BulkExport())
+                  )
+              );
+              element.setAttribute("download", "not-cloud-passwords.json");
+
+              element.style.display = "none";
+              document.body.appendChild(element);
+
+              element.click();
+
+              document.body.removeChild(element);
+            }}
+          >
+            Bulk Download
+          </Button>
+        }
+      >
+        <P>
+          <b>WARNING!</b> Downloading bulk passwords will download{" "}
+          <b>UNENCRYPTED</b> passwords onto your machine. Make sure you delete
+          these securely when you are done.
+        </P>
+        <P>
+          This is irrelivant if you have the same security credentials on this
+          machine as you do on your server. So, to reiterate, make sure your
+          server is well encrypted and behind a proper firewall. This software
+          does not handle security for you!
+        </P>
+        <FileDrop
+          file={(file) => {
+            var reader = new FileReader();
+            reader.readAsText(file, "UTF-8");
+            reader.onload = (evt) => {
+              const json = JSON.parse(evt.target?.result as string);
+              Api.Passwords.BulkImport(json)
+                .then(async () => {
+                  set_passwords(await Api.Passwords.GetAll());
+                  set_bulk(false);
+                  alert(<>Successfully imported the passwords.</>, "success");
+                })
+                .catch(() => {
+                  set_bulk(false);
+                  alert(
+                    <>
+                      Failed to upload the bulk file. Post an issue on GitHub if
+                      this continues.
+                    </>,
+                    "danger"
+                  );
+                });
+            };
+            reader.onerror = (evt) => {
+              set_bulk(false);
+              alert(
+                <>
+                  Failed to read the bulk file. Post an issue on GitHub if this
+                  continues.
+                </>,
+                "danger"
+              );
+            };
+          }}
+        >
+          <div className="file-uploader">
+            <H3>Drag and drop your bulk files here</H3>
+            <P>This will import them into your current cloud.</P>
+          </div>
+        </FileDrop>
       </Modal>
     </>
   );

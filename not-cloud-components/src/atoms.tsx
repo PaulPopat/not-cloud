@@ -367,6 +367,10 @@ export const H2: React.FC = ({ children }) => (
   <h2 className="mt-3 mb-4">{children}</h2>
 );
 
+export const H3: React.FC = ({ children }) => (
+  <h3 className="mt-3 mb-4">{children}</h3>
+);
+
 export const H5: React.FC = ({ children }) => (
   <h5 className="mt-1 mb-2">{children}</h5>
 );

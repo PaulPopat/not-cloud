@@ -103,6 +103,37 @@ export const Api = Build(
         parameters: { password: IsString },
         returns: DoNotCare,
       },
+      BulkExport: {
+        method: "GET",
+        url: "/passwords/bulk",
+        returns: IsArray(
+          IsObject({
+            id: IsString,
+            name: IsString,
+            url: IsString,
+            username: IsString,
+            password: IsString,
+            description: IsString,
+            tags: IsArray(IsObject({ id: IsString, name: IsString })),
+          })
+        ),
+      },
+      BulkImport: {
+        method: "POST",
+        url: "/passwords/bulk",
+        body: IsArray(
+          IsObject({
+            id: IsString,
+            name: IsString,
+            url: IsString,
+            username: IsString,
+            password: IsString,
+            description: IsString,
+            tags: IsArray(IsObject({ id: IsString, name: IsString })),
+          })
+        ),
+        returns: DoNotCare,
+      },
       Tags: {
         GetAll: {
           method: "GET",

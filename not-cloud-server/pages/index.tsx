@@ -76,6 +76,23 @@ export default function Page(
                 ))}
             </Card>
           </Column>
+          <Column xs="12" md="6" lg="4">
+            <Card>
+              <H5>Download the App</H5>
+              <P>
+                The app can be used to sync files from your desktop to your Not
+                Cloud server. The app is currently only available on Windows as
+                that is the only build resources available. Plans for an Apple
+                computer to build the MacOS app are in the works.
+              </P>
+              <Button.External
+                href="/application/not-cloud-sync-setup.exe"
+                colour="primary"
+              >
+                Download
+              </Button.External>
+            </Card>
+          </Column>
         </Row>
       </Container>
     </>

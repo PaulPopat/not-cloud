@@ -51,11 +51,9 @@ export default function App({ Component, pageProps }: AppProps) {
           >
             <Container>
               {alerts.map((a) => (
-                <Row>
+                <Row key={a.id}>
                   <Column xs="12">
-                    <Alert key={a.id} colour={a.type}>
-                      {a.html}
-                    </Alert>
+                    <Alert colour={a.type}>{a.html}</Alert>
                   </Column>
                 </Row>
               ))}
