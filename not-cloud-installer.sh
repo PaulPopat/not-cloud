@@ -33,11 +33,8 @@ EOL
 
 cwd=$(pwd)
 
-{
-  cd /etc/not-cloud
-  docker-compose up -d --build
-} || {
-  cd $cwd
-}
+cd /etc/not-cloud
+docker-compose up -d --build
 
 cd $cwd
+rm -f not-cloud-installer-v$not_cloud_version.sh
