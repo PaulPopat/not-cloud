@@ -39,6 +39,7 @@ export default BuildApi({
           const current = tags.find((c) => c.name === t.name);
           if (!current) {
             const input = await AddTag(t.name);
+            tags.push(input);
             return input.id;
           }
 
