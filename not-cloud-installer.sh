@@ -17,6 +17,7 @@ services:
     image: paulpopat/not-cloud:${not_cloud_version}
     ports:
       - "3000:3000"
+      - "80:80"
     command: ["node_modules/.bin/next", "start"]
     restart: unless-stopped
     volumes:
