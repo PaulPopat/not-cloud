@@ -12,6 +12,7 @@
     "common": true,
     "style": true,
     "file-store": true,
-    "public/application": true
+    "public/application": true,
+    "dist": true
   }
 }

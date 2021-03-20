@@ -8,7 +8,7 @@
     "build:server": "tsc --project tsconfig.server.json",
     "build:next": "next build",
     "build": "npm run build:next && npm run build:server",
-    "start": "NODE_ENV=production node dist/index.js",
+    "start": "NODE_ENV=production node dist/server/index.js",
     "postinstall": "rimraf common/ && rimraf styles/ && copyfiles -f ../not-cloud-components/src/*.* common/ && copyfiles -f ../not-cloud-components/styles/*.* style/",
     "docker:dev": "npm run postinstall && docker-compose -f docker-compose.yml -f docker-compose.debug.yml up --build",
     "docker:prod": "npm run postinstall && docker-compose up --build -d"
