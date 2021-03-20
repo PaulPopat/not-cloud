@@ -93,6 +93,18 @@ export default function Page(
               </Button.External>
             </Card>
           </Column>
+          <Column xs="12" md="6" lg="4">
+            <Card>
+              <H5>Site Settings</H5>
+              <P>
+                Here you can configure the domain name used for file sharing.
+                More settings to come!
+              </P>
+              <Button.Link href="/site-settings" colour="primary">
+                Access
+              </Button.Link>
+            </Card>
+          </Column>
         </Row>
       </Container>
     </>

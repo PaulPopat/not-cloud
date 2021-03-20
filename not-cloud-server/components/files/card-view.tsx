@@ -7,6 +7,7 @@ import { FormatBytes } from "../../common/util";
 import { Icon, Small } from "../../common/atoms";
 import { Column, Row } from "../../common/layout";
 import { Card } from "../../common/molecules";
+import { CardActions } from "./file-actions";
 
 export const CardView: React.FC<{
   content: {
@@ -17,10 +18,9 @@ export const CardView: React.FC<{
     edited: number;
     size: number;
     download_url: string;
+    shared: boolean;
   }[];
-  set_deleting: (value: string) => void;
-  set_editing: (value: string) => void;
-}> = ({ content, set_deleting, set_editing }) => {
+}> = ({ content }) => {
   const router = useRouter();
   return (
     <Row>
@@ -36,7 +36,7 @@ export const CardView: React.FC<{
         })
         .map((c) => ({
           ...c,
-          download_url: GetFileLink(c.type, c.download_url),
+          detailed_download_url: GetFileLink(c.type, c.download_url),
         }))
         .map((c) => (
           <Column xs="12" md="6" lg="4" key={c.name}>
@@ -55,12 +55,12 @@ export const CardView: React.FC<{
                       height="24"
                       valign="sub"
                     />{" "}
-                    {c.download_url.type === "internal" ? (
-                      <Link href={c.download_url.href}>
+                    {c.detailed_download_url.type === "internal" ? (
+                      <Link href={c.detailed_download_url.href}>
                         <a>{c.name}</a>
                       </Link>
                     ) : (
-                      <a href={c.download_url.href} target="_blank">
+                      <a href={c.detailed_download_url.href} target="_blank">
                         {c.name}
                       </a>
                     )}
@@ -73,37 +73,7 @@ export const CardView: React.FC<{
               </Row>
               <Row>
                 <Column xs="4">
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      set_editing(c.name + c.extension);
-                    }}
-                  >
-                    <Icon
-                      is="edit"
-                      colour="dark"
-                      width="24"
-                      height="24"
-                      valign="sub"
-                    />
-                  </a>
-                  &nbsp;
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      set_deleting(c.download_url.original);
-                    }}
-                  >
-                    <Icon
-                      is="trash"
-                      colour="dark"
-                      width="24"
-                      height="24"
-                      valign="sub"
-                    />
-                  </a>
+                  <CardActions file={c} />
                 </Column>
                 <Column xs="8">
                   <Card.Text align="end">

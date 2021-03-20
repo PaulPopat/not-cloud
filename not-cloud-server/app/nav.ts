@@ -16,10 +16,14 @@ export function BuildNav(
       click: "/files",
       name: "Files",
     },
+    {
+      click: "/site-settings",
+      name: "Site Settings",
+    },
   ];
 
   if (page_actions.length > 0) {
-    result.push({ name: "Actions", items: page_actions });
+    result.unshift({ name: "Actions", items: page_actions });
   }
 
   return result;

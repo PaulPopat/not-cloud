@@ -1,17 +1,20 @@
 import { Assert, IsArray, IsObject, IsString } from "@paulpopat/safe-type";
+import { Exists } from "../../../../services/files";
 import {
-  Exists,
   GetFileString,
   ToHtml,
   WriteFileString,
-} from "../../../../services/files";
+} from "../../../../services/ncloud";
 import { BuildApi } from "../../../../util/api";
 
 export default BuildApi({
   GET: async (query) => {
     Assert(IsObject({ path: IsArray(IsString) }), query);
     const path = query.path.join("/");
-    if (path.endsWith(".docx") && !await Exists(path.replace(".docx", ".ncloud"))) {
+    if (
+      path.endsWith(".docx") &&
+      !(await Exists(path.replace(".docx", ".ncloud")))
+    ) {
       const download = await ToHtml(query.path.join("/"));
       if (!download) {
         return { status: 404 };

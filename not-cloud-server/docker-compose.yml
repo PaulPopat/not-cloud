@@ -4,10 +4,11 @@ services:
     build: .
     ports:
       - "3000:3000"
+      - "80:80"
     command: ["node_modules/.bin/next", "start"]
     restart: unless-stopped
     volumes:
-      - /mnt/sdb/not-cloud:/file-store
+      - /path/to/local/storage:/file-store
   db:
     image: postgres
     environment:

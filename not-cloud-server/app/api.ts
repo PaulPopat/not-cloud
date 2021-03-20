@@ -2,6 +2,7 @@ import Build from "@paulpopat/api-interface";
 import {
   DoNotCare,
   IsArray,
+  IsBoolean,
   IsLiteral,
   IsNumber,
   IsObject,
@@ -211,6 +212,7 @@ export const Api = Build(
             edited: IsNumber,
             size: IsNumber,
             download_url: IsString,
+            shared: IsBoolean,
           })
         ),
       },
@@ -269,6 +271,32 @@ export const Api = Build(
             download_url: IsString,
           })
         ),
+      },
+      Share: {
+        method: "POST",
+        url: "/files/share/:path",
+        parameters: { path: IsString },
+        body: DoNotCare,
+        returns: IsString,
+      },
+      UnShare: {
+        method: "DELETE",
+        url: "/files/share/:path",
+        parameters: { path: IsString },
+        returns: IsString,
+      },
+    },
+    Settings: {
+      Get: {
+        method: "GET",
+        url: "/site-settings",
+        returns: IsObject({ domain: IsString }),
+      },
+      Update: {
+        method: "PUT",
+        url: "/site-settings",
+        body: IsObject({ domain: IsString }),
+        returns: IsObject({ domain: IsString }),
       },
     },
   },

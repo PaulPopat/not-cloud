@@ -15,6 +15,7 @@ import { Column, Container, Row } from "../../common/layout";
 import { Breadcrumbs, Modal, ProgressBar } from "../../common/molecules";
 import { FormatBytes } from "../../common/util";
 import Mime from "mime-types";
+import { FileActionsContext } from "../../components/files/file-actions";
 
 export const getServerSideProps = async () => {
   return {
@@ -44,6 +45,19 @@ export default function Page(
   const [form, set_form] = React.useState(Form.Default);
   const [mode, set_mode] = React.useState<"table" | "card">("card");
   const [search, set_search] = React.useState(Search.Default);
+  const [sharing_link, set_sharing_link] = React.useState("");
+  const [uploading, set_uploading] = React.useState(false);
+
+  const share = (path: string) =>
+    Api.Files.Share({ path }, {}).then((r) => {
+      set_sharing_link(r);
+      Api.Files.ReadDirectory({ path: props.base }).then(set_content);
+    });
+
+  const un_share = (path: string) =>
+    Api.Files.UnShare({ path }).then(() =>
+      Api.Files.ReadDirectory({ path: props.base }).then(set_content)
+    );
 
   React.useEffect(() => {
     set_content(props.content);
@@ -54,7 +68,9 @@ export default function Page(
   }, [editing]);
 
   return (
-    <>
+    <FileActionsContext.Provider
+      value={{ set_deleting, set_editing, share, un_share }}
+    >
       <Head>
         <title>Files | Not Cloud</title>
       </Head>
@@ -67,6 +83,10 @@ export default function Page(
           {
             click: () => set_new_ncloud(true),
             name: "Create New Document",
+          },
+          {
+            click: () => set_uploading(true),
+            name: "Upload a file",
           },
           {
             click: () => set_mode("table"),
@@ -95,34 +115,6 @@ export default function Page(
         </Search>
       </Navbar>
       <Container>
-        <Row>
-          <Column>
-            <FileDrop
-              file={(f) => {
-                const body = new FormData();
-                body.append("file", f);
-
-                fetch(
-                  `/api/files/upload?path=${encodeURIComponent(
-                    props.base + "/" + f.name
-                  )}`,
-                  { method: "POST", body }
-                ).then(() => {
-                  Api.Files.ReadDirectory({ path: props.base }).then(
-                    set_content
-                  );
-                });
-              }}
-            >
-              <div className="file-uploader">
-                <H2>File Upload</H2>
-                <P>
-                  Drag and drop a file or multiple files here to upload them.
-                </P>
-              </div>
-            </FileDrop>
-          </Column>
-        </Row>
         <Row>
           <Column xs="12" lg="6">
             <Breadcrumbs>
@@ -155,20 +147,8 @@ export default function Page(
             />
           </Column>
         </Row>
-        {mode === "table" && (
-          <TableView
-            content={content}
-            set_deleting={set_deleting}
-            set_editing={set_editing}
-          />
-        )}
-        {mode === "card" && (
-          <CardView
-            content={content}
-            set_deleting={set_deleting}
-            set_editing={set_editing}
-          />
-        )}
+        {mode === "table" && <TableView content={content} />}
+        {mode === "card" && <CardView content={content} />}
       </Container>
       <Modal
         show={deleting != ""}
@@ -193,7 +173,29 @@ export default function Page(
           </Button>
         }
       >
+        <P>Are you sure you want to delete;</P>
+        <P>
+          <i>{deleting}</i>
+        </P>
         <P>This is not reversible.</P>
+      </Modal>
+      <Modal
+        show={sharing_link != ""}
+        close={() => set_sharing_link("")}
+        title={<>One time sharing link created!</>}
+      >
+        <P>
+          Below is your one time sharing link. Please copy that to the person
+          that you want to be able to access the file.
+        </P>
+        <div className="input-group mb-3">
+          <input
+            className="form-control"
+            readOnly
+            aria-readonly
+            value={sharing_link}
+          />
+        </div>
       </Modal>
       <Form
         form={form}
@@ -302,7 +304,42 @@ export default function Page(
               ))}
           </div>
         </Modal>
+        <Modal
+          show={uploading}
+          close={() => set_uploading(false)}
+          title={<>Upload</>}
+        >
+          <Row>
+            <Column>
+              <FileDrop
+                file={(f) => {
+                  const body = new FormData();
+                  body.append("file", f);
+
+                  fetch(
+                    `/api/files/upload?path=${encodeURIComponent(
+                      props.base + "/" + f.name
+                    )}`,
+                    { method: "POST", body }
+                  ).then(() => {
+                    Api.Files.ReadDirectory({ path: props.base }).then((r) => {
+                      set_content(r);
+                      set_uploading(false);
+                    });
+                  });
+                }}
+              >
+                <div className="file-uploader">
+                  <H2>File Upload</H2>
+                  <P>
+                    Drag and drop a file or multiple files here to upload them.
+                  </P>
+                </div>
+              </FileDrop>
+            </Column>
+          </Row>
+        </Modal>
       </Form>
-    </>
+    </FileActionsContext.Provider>
   );
 }

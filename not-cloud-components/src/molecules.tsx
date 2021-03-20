@@ -13,7 +13,7 @@ export const Breadcrumbs = Object.assign(
     Item: ({ href, children }: PropsWithChildren<{ href: string }>) => {
       const Link = React.useContext(LinkContext);
       return (
-        <li className="breadcrumb-item">
+        <li className="breadcrumb-item" style={{ cursor: "pointer" }}>
           <Link href={href}>{children}</Link>
         </li>
       );
