@@ -18,7 +18,7 @@ services:
     ports:
       - "3000:3000"
       - "80:80"
-    command: ["node_modules/.bin/next", "start"]
+    command: ["npm", "run", "start"]
     restart: unless-stopped
     volumes:
       - ${file_store_location}:/file-store
