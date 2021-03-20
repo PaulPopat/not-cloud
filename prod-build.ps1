@@ -23,8 +23,9 @@ try {
 
   Write-Output "Preparing the installer file"
   Set-Location $PSScriptRoot
-  $installer = Get-Content "./not-cloud-installer.sh"
-  $installer.Replace("NOT_CLOUD_VERSION", $tag) | Out-File -FilePath "./not-cloud-installer-v$tag.sh"
+  $installer = [System.IO.File]::ReadAllText("./not-cloud-installer.sh")
+  $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+  [System.IO.File]::WriteAllText("./not-cloud-installer-v$tag.sh", $installer.Replace("NOT_CLOUD_VERSION", $tag), $Utf8NoBomEncoding)
   
 } finally {
   Set-Location $PSScriptRoot
