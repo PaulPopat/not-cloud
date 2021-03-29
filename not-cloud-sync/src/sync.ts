@@ -8,6 +8,7 @@ import {
   IsUnion,
   IsLiteral,
   IsNumber,
+  IsBoolean,
 } from "@paulpopat/safe-type";
 import Axios from "axios";
 import Request from "request";
@@ -84,6 +85,7 @@ export async function PerformSync(
             edited: IsNumber,
             size: IsNumber,
             download_url: IsString,
+            shared: IsBoolean,
           })
         ),
         data
@@ -106,6 +108,7 @@ export async function PerformSync(
           edited: IsNumber,
           size: IsNumber,
           download_url: IsString,
+          shared: IsBoolean,
         })
       ),
       content
