@@ -39,6 +39,7 @@ export default function App({ Component, pageProps }: AppProps) {
           },
         }}
       >
+        <Component {...pageProps} />
         {alerts.length > 0 && (
           <div
             style={{
@@ -60,7 +61,6 @@ export default function App({ Component, pageProps }: AppProps) {
             </Container>
           </div>
         )}
-        <Component {...pageProps} />
         <Transition
           show={loading}
           hidden={{
