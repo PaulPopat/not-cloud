@@ -5,7 +5,7 @@
     "compile:sass": "node-sass style/index.scss -o src/style",
     "dev": "npm run postinstall && npm run compile:sass && molecular dev",
     "postinstall": "rimraf src/common/ && rimraf styles/ && copyfiles -f ../not-cloud-components/src/*.* src/common/ && copyfiles -f ../not-cloud-components/styles/*.* style/",
-    "package": "npm run postinstall && npm run compile:sass && molecular package"
+    "package": "npm run postinstall && npm run compile:sass && molecular package --win --linux --x64"
   },
   "author": "paulpopat",
   "license": "ISC",
