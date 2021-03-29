@@ -13,6 +13,7 @@ import { Column, Container, Row } from "../common/layout";
 import { Card } from "../common/molecules";
 import { FormatBytes, Unpromise } from "../common/util";
 import { Navbar } from "../components/navbar";
+import { WithParameters } from "../util/url";
 
 type Props = {
   content: Unpromise<ReturnType<typeof Api["Files"]["Search"]>>;
@@ -48,7 +49,7 @@ export default function Page(props: Props) {
           form={search}
           set_form={set_search}
           submit={(f) => {
-            router.push(`/search?term=${encodeURIComponent(f.term)}`);
+            router.push(WithParameters("/search", { term: f.term.toString() }));
           }}
         >
           <Search.InlineText

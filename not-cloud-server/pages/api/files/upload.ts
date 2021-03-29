@@ -2,6 +2,8 @@ import { Assert, IsObject, IsString } from "@paulpopat/safe-type";
 import { NextApiRequest, NextApiResponse } from "next";
 import { IncomingForm, Fields, Files } from "formidable";
 import { GetLocalPath } from "../../../services/files";
+import Fs from "fs-extra";
+import Path from "path";
 
 export const config = {
   api: {
@@ -26,8 +28,15 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     }
   );
 
-  if (Object.keys(files).length > 1) {
-    throw new Error("Attempted to upload multiple files");
+  for (const key in files) {
+    const item = files[key];
+    const target = Array.isArray(item) ? item : [item];
+    for (const file of target) {
+      await Fs.rename(
+        file.path,
+        Path.join(Path.dirname(file.path), file.name)
+      );
+    }
   }
 
   res.status(200).send({});

@@ -16,6 +16,7 @@ import { Breadcrumbs, Modal, ProgressBar } from "../../common/molecules";
 import { FormatBytes } from "../../common/util";
 import Mime from "mime-types";
 import { FileActionsContext } from "../../components/files/file-actions";
+import { BuildUrl, WithParameters } from "../../util/url";
 
 export const getServerSideProps = async () => {
   return {
@@ -104,7 +105,7 @@ export default function Page(
           form={search}
           set_form={set_search}
           submit={(f) => {
-            router.push(`/search?term=${encodeURIComponent(f.term)}`);
+            router.push(WithParameters("/search", { term: f.term.toString() }));
           }}
         >
           <Search.InlineText
@@ -266,9 +267,13 @@ export default function Page(
               {IsString(router.query.view) && (
                 <Button.External
                   colour="success"
-                  href={`/api/files/download/${encodeURI(
-                    props.base
-                  )}/${encodeURI(router.query.view)}`}
+                  href={BuildUrl(
+                    "api",
+                    "files",
+                    "download",
+                    encodeURI(props.base),
+                    encodeURI(router.query.view)
+                  )}
                   no-margin
                 >
                   Download
@@ -288,16 +293,24 @@ export default function Page(
             {IsString(router.query.view) &&
               (ExtensionMap(router.query.view) === "image" ? (
                 <img
-                  src={`/api/files/download/${encodeURI(
-                    props.base
-                  )}/${encodeURI(router.query.view)}`}
+                  src={BuildUrl(
+                    "api",
+                    "files",
+                    "download",
+                    props.base,
+                    router.query.view
+                  )}
                 />
               ) : (
                 <video width="100%" controls>
                   <source
-                    src={`/api/files/download/${encodeURI(
-                      props.base
-                    )}/${encodeURI(router.query.view)}`}
+                    src={BuildUrl(
+                      "api",
+                      "files",
+                      "download",
+                      props.base,
+                      router.query.view
+                    )}
                     type={Mime.lookup(router.query.view) || undefined}
                   />
                 </video>
@@ -317,7 +330,7 @@ export default function Page(
                   body.append("file", f);
 
                   fetch(
-                    `/api/files/upload?path=${encodeURIComponent(props.base)}`,
+                    WithParameters("/api/files/upload", { path: props.base }),
                     { method: "POST", body }
                   ).then(() => {
                     Api.Files.ReadDirectory({ path: props.base }).then((r) => {
