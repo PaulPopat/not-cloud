@@ -160,9 +160,7 @@ export async function PerformSync(
           );
           Request.post(
             {
-              url: `${server_address}api/files/upload?path=${Urlify(
-                dir.url + "/" + name
-              )}`,
+              url: `${server_address}api/files/upload?path=${Urlify(dir.url)}`,
               formData: {
                 file: Fs.createReadStream(Path.join(dir.path, name)),
               },

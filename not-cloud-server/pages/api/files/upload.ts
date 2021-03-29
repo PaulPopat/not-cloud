@@ -1,7 +1,7 @@
 import { Assert, IsObject, IsString } from "@paulpopat/safe-type";
 import { NextApiRequest, NextApiResponse } from "next";
 import { IncomingForm, Fields, Files } from "formidable";
-import { Download } from "../../../services/files";
+import { GetLocalPath } from "../../../services/files";
 
 export const config = {
   api: {
@@ -12,9 +12,11 @@ export const config = {
 export default async function (req: NextApiRequest, res: NextApiResponse) {
   const query = req.query;
   Assert(IsObject({ path: IsString }), query);
+  const target = GetLocalPath(query.path);
   const { fields, files } = await new Promise<{ fields: Fields; files: Files }>(
     (resolve, reject) => {
       const form = new IncomingForm();
+      form.uploadDir = target;
       form.maxFileSize = Number.MAX_SAFE_INTEGER;
 
       form.parse(req, (err, fields, files) => {
@@ -26,10 +28,6 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 
   if (Object.keys(files).length > 1) {
     throw new Error("Attempted to upload multiple files");
-  }
-
-  for (const key in files) {
-    await Download(query.path, files[key]);
   }
 
   res.status(200).send({});

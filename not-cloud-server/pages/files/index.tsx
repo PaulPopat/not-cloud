@@ -317,9 +317,7 @@ export default function Page(
                   body.append("file", f);
 
                   fetch(
-                    `/api/files/upload?path=${encodeURIComponent(
-                      props.base + "/" + f.name
-                    )}`,
+                    `/api/files/upload?path=${encodeURIComponent(props.base)}`,
                     { method: "POST", body }
                   ).then(() => {
                     Api.Files.ReadDirectory({ path: props.base }).then((r) => {

@@ -49,36 +49,6 @@ export async function Exists(path: string) {
   return await Fs.pathExists(start);
 }
 
-export function Download(path: string, file: File | File[]) {
-  if (Array.isArray(file)) {
-    throw new Error("Attempted to upload multiple files");
-  }
-
-  const start = Path.join(root, path);
-  const pipe = Fs.createReadStream(file.path).pipe(Fs.createWriteStream(start));
-  return new Promise<void>((res, rej) => {
-    pipe.on("end", async () => {
-      try {
-        await Fs.remove(file.path);
-      } catch {}
-      res();
-    });
-    pipe.on("close", async () => {
-      try {
-        await Fs.remove(file.path);
-      } catch {}
-      res();
-    });
-
-    pipe.on("error", async () => {
-      try {
-        await Fs.remove(file.path);
-      } catch {}
-      rej();
-    });
-  });
-}
-
 export async function Delete(path: string) {
   const start = Path.join(root, path);
   if (start.endsWith(".ncloud")) {
