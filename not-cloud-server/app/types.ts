@@ -2,6 +2,7 @@ import {
   Checker,
   IsArray,
   IsBoolean,
+  IsIntersection,
   IsLiteral,
   IsNumber,
   IsObject,
@@ -55,7 +56,7 @@ export const IsReducedPassword = IsObject({
   url: IsString,
 });
 
-export const IsPassword = IsUnion(
+export const IsPassword = IsIntersection(
   IsReducedPassword,
   IsObject({
     password: IsString,
