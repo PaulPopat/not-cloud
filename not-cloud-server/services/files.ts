@@ -144,6 +144,7 @@ export function Search(term: string) {
           edited: stat.mtime.getTime(),
           size: stat.size,
           download_url: Path.relative(root, match).replace(/\\/gm, "/"),
+          shared: await IsShared(match),
         });
       }
 

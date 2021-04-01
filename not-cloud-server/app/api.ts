@@ -2,13 +2,19 @@ import Build from "@paulpopat/api-interface";
 import {
   DoNotCare,
   IsArray,
-  IsBoolean,
-  IsLiteral,
   IsNumber,
   IsObject,
   IsString,
-  IsUnion,
+  Optional,
 } from "@paulpopat/safe-type";
+import {
+  IsBookmark,
+  IsExtendedPasswordTag,
+  IsFsEntry,
+  IsPassword,
+  IsPasswordTag,
+  IsReducedPassword,
+} from "./types";
 
 export const Api = Build(
   {
@@ -16,34 +22,13 @@ export const Api = Build(
       GetAll: {
         method: "GET",
         url: "/passwords",
-        returns: IsArray(
-          IsObject({
-            id: IsString,
-            name: IsString,
-            url: IsString,
-            username: IsString,
-            tags: IsArray(IsObject({ id: IsString, name: IsString })),
-          })
-        ),
+        returns: IsArray(IsReducedPassword),
       },
       Get: {
         method: "GET",
         url: "/passwords/:password",
         parameters: { password: IsString },
-        returns: IsObject({
-          tags: IsArray(
-            IsObject({
-              id: IsString,
-              name: IsString,
-            })
-          ),
-          id: IsString,
-          name: IsString,
-          url: IsString,
-          username: IsString,
-          password: IsString,
-          description: IsString,
-        }),
+        returns: IsPassword,
       },
       Post: {
         method: "POST",
@@ -56,20 +41,7 @@ export const Api = Build(
           description: IsString,
           tags: IsArray(IsString),
         }),
-        returns: IsObject({
-          tags: IsArray(
-            IsObject({
-              id: IsString,
-              name: IsString,
-            })
-          ),
-          id: IsString,
-          name: IsString,
-          url: IsString,
-          username: IsString,
-          password: IsString,
-          description: IsString,
-        }),
+        returns: IsPassword,
       },
       Put: {
         method: "PUT",
@@ -83,20 +55,7 @@ export const Api = Build(
           description: IsString,
           tags: IsArray(IsString),
         }),
-        returns: IsObject({
-          tags: IsArray(
-            IsObject({
-              id: IsString,
-              name: IsString,
-            })
-          ),
-          id: IsString,
-          name: IsString,
-          url: IsString,
-          username: IsString,
-          password: IsString,
-          description: IsString,
-        }),
+        returns: IsPassword,
       },
       Delete: {
         method: "DELETE",
@@ -107,59 +66,25 @@ export const Api = Build(
       BulkExport: {
         method: "GET",
         url: "/passwords/bulk",
-        returns: IsArray(
-          IsObject({
-            id: IsString,
-            name: IsString,
-            url: IsString,
-            username: IsString,
-            password: IsString,
-            description: IsString,
-            tags: IsArray(IsObject({ id: IsString, name: IsString })),
-          })
-        ),
+        returns: IsArray(IsPassword),
       },
       BulkImport: {
         method: "POST",
         url: "/passwords/bulk",
-        body: IsArray(
-          IsObject({
-            id: IsString,
-            name: IsString,
-            url: IsString,
-            username: IsString,
-            password: IsString,
-            description: IsString,
-            tags: IsArray(IsObject({ id: IsString, name: IsString })),
-          })
-        ),
+        body: IsArray(IsPassword),
         returns: DoNotCare,
       },
       Tags: {
         GetAll: {
           method: "GET",
           url: "/password-tags",
-          returns: IsArray(
-            IsObject({
-              id: IsString,
-              name: IsString,
-            })
-          ),
+          returns: IsArray(IsPasswordTag),
         },
         Get: {
           method: "GET",
           url: "/password-tags/:tag",
           parameters: { tag: IsString },
-          returns: IsObject({
-            passwords: IsArray(
-              IsObject({
-                id: IsString,
-                name: IsString,
-              })
-            ),
-            id: IsString,
-            name: IsString,
-          }),
+          returns: IsExtendedPasswordTag,
         },
         Post: {
           method: "POST",
@@ -179,16 +104,7 @@ export const Api = Build(
           body: IsObject({
             name: IsString,
           }),
-          returns: IsObject({
-            passwords: IsArray(
-              IsObject({
-                id: IsString,
-                name: IsString,
-              })
-            ),
-            id: IsString,
-            name: IsString,
-          }),
+          returns: IsExtendedPasswordTag,
         },
         Delete: {
           method: "DELETE",
@@ -203,18 +119,7 @@ export const Api = Build(
         method: "GET",
         url: "/files/path/:path",
         parameters: { path: IsString },
-        returns: IsArray(
-          IsObject({
-            name: IsString,
-            extension: IsString,
-            type: IsUnion(IsLiteral("directory"), IsLiteral("file")),
-            created: IsNumber,
-            edited: IsNumber,
-            size: IsNumber,
-            download_url: IsString,
-            shared: IsBoolean,
-          })
-        ),
+        returns: IsArray(IsFsEntry),
       },
       Delete: {
         method: "DELETE",
@@ -260,17 +165,7 @@ export const Api = Build(
         method: "GET",
         url: "/files/search",
         parameters: { term: IsString },
-        returns: IsArray(
-          IsObject({
-            name: IsString,
-            extension: IsString,
-            type: IsUnion(IsLiteral("directory"), IsLiteral("file")),
-            created: IsNumber,
-            edited: IsNumber,
-            size: IsNumber,
-            download_url: IsString,
-          })
-        ),
+        returns: IsArray(IsFsEntry),
       },
       Share: {
         method: "POST",
@@ -297,6 +192,60 @@ export const Api = Build(
         url: "/site-settings",
         body: IsObject({ domain: IsString }),
         returns: IsObject({ domain: IsString }),
+      },
+    },
+    Bookmarks: {
+      GetAll: {
+        method: "GET",
+        url: "/bookmarks",
+        returns: IsArray(IsBookmark),
+      },
+      Add: {
+        method: "POST",
+        url: "/bookmarks",
+        body: IsObject({
+          name: IsString,
+          url: IsString,
+          folder: Optional(IsString),
+        }),
+        returns: DoNotCare,
+      },
+      Update: {
+        method: "PUT",
+        url: "/bookmarks/:id",
+        parameters: { id: IsString },
+        body: IsObject({ name: IsString, url: IsString }),
+        returns: DoNotCare,
+      },
+      Delete: {
+        method: "DELETE",
+        url: "/bookmarks/:id",
+        parameters: { id: IsString },
+        returns: DoNotCare,
+      },
+      Folders: {
+        Add: {
+          method: "POST",
+          url: "/bookmark-folders",
+          body: IsObject({
+            name: IsString,
+            parent: Optional(IsString),
+          }),
+          returns: DoNotCare,
+        },
+        Update: {
+          method: "PUT",
+          url: "/bookmark-folders/:id",
+          parameters: { id: IsString },
+          body: IsObject({ name: IsString }),
+          returns: DoNotCare,
+        },
+        Delete: {
+          method: "DELETE",
+          url: "/bookmark-folders/:id",
+          parameters: { id: IsString },
+          returns: DoNotCare,
+        },
       },
     },
   },

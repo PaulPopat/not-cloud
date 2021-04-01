@@ -11,6 +11,6 @@ CREATE TABLE password_tag_matches (
   id uuid PRIMARY KEY,
   password uuid NOT NULL,
   tag uuid NOT NULL,
-  CONSTRAINT fk_password FOREIGN KEY (password) REFERENCES Passwords(id),
-  CONSTRAINT fk_tag FOREIGN KEY (tag) REFERENCES Password_Tags(id)
+  CONSTRAINT fk_password FOREIGN KEY (password) REFERENCES passwords(id),
+  CONSTRAINT fk_tag FOREIGN KEY (tag) REFERENCES password_tags(id)
 )

@@ -95,10 +95,10 @@ function Process(db: Client) {
   };
 }
 
+export type Database = ReturnType<typeof Process>;
+
 let updated = false;
-export async function Execute<T>(
-  action: (db: ReturnType<typeof Process>) => Promise<T>
-) {
+export async function Execute<T>(action: (db: Database) => Promise<T>) {
   if (!updated) {
     await UpdateDatabase();
   }
